@@ -1,0 +1,13 @@
+<html>
+
+  <head>
+    <title> Funcionamiento teórico de auto-web </title>
+  </head>
+
+  <body>
+    <header>
+      <h1 id="HTMA-TITLE"> Sitio web de funcionamiento teorico </h1>
+      <h2 id="HTMA-DESCRIPTION"> Esto es un subtítulo </h2> 
+    </header>
+	
+</html> 
