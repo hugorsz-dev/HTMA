@@ -61,23 +61,9 @@ class WBlock ():
                 value= trace.split (":")[1]
                 attributes[key]=value; 
             except: 
-                print ("Formatting error at attribute at:", key, value)
+                raise Exception ("Formatting error at attribute at:", key, value)
             
         return attributes; 
-    
-    """
-    TODO - Antes necesario terminar el list_directory_files
-    Generar código
-    -   Método del objeto "bloque" que retorna su código HTML generado. 
-    """
-    
-    def generate_code (self):
-        output =""
-        if self.attributes["REDIR"] == "HTMA": 
-            files_to_redir = [link for link in self.list_directory_files() if ".htma" in link ] 
-            for link in files_to_redir:
-                code= ""
-                
 
     """
     Dar formato a las htm id
@@ -138,30 +124,50 @@ class WBlock ():
     """
     Listar archivos del directorio
     -   Lista los archivos que encuentra en la ruta del atributo "DIR"
+    -   Admite rutas relativas desde el punto en que se ejecuta el script. 
     """    
     def list_directory_files (self):
         output = []
-        if not self.attributes["DIR"]: 
-            return False 
-        
-        if self.attributes["DIR"] == "$ROOT$":
-            self.attributes["DIR"]=input_path 
-            for path in os.listdir(self.attributes["DIR"]):
-                if os.path.isfile(os.path.join(self.attributes["DIR"], path)):
-                    output.append(path)
-                    
-            return output 
+        try:
+            self.attributes["DIR"] 
+        except:
+            raise Exception ("Directory label is missing in the block")
+
+        for path in os.listdir(self.attributes["DIR"]):
+            if os.path.isfile(os.path.join(self.attributes["DIR"], path)):
+                output.append(path)  
+        return output 
         
     
-block = WBlock('DIR: $ROOT$; REDIR: HTMA; FORMAT: { <a href="$LINK_FOR_EACH_FILE_IN_DIR$"> <h3> $HTMA_TITLE$ </h3> <p> $HTMA_DESCRIPTION$ </p> </a> }')
+block = WBlock('DIR: web_prueba; REDIR: HTMA; FORMAT: { <a href="$LINK_FOR_EACH_FILE_IN_DIR$"> <h3> $HTMA_TITLE$ </h3> <p> $HTMA_DESCRIPTION$ </p> </a> }')
 block.set_format_htm_ids(input_path+"/articulos.htma")
 print (block.attributes)
 
-print (block.list_directory_files())
+class CGenerator ():
+    """
+    TODO - Antes necesario terminar el list_directory_files
+    Generar código
+    -   Método del objeto "bloque" que retorna su código HTML generado. 
+    """
+    
+    def generate_code (self):
+        output =""
+        if self.attributes["REDIR"] == "HTMA": 
+            files_to_redir = [link for link in self.list_directory_files() if ".htma" in link ] 
+            for link in files_to_redir:
+                print (link)
+
+        elif self.attributes["REDIR"] == "MD": 
+            pass
+        elif self.attributes["REDIR"] == "OTHER": 
+            pass
+
+
+print (block.generate_code())
 
 """
 [HTMA=
-    DIR: $THIS$;
+    DIR: .;
     REDIR: HTMA; # iteración con todos los ficheros .htma
     FORMAT: {
         <a href="$FOR_EACH_FILE_IN_DIR$"> # para cada fichero htma
