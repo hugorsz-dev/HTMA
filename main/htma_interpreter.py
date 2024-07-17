@@ -144,13 +144,20 @@ block.set_format_htm_ids(input_path+"/articulos.htma")
 print (block.attributes)
 
 class CGenerator ():
-    """
-    TODO - Antes necesario terminar el list_directory_files
-    Generar código
-    -   Método del objeto "bloque" que retorna su código HTML generado. 
-    """
+
+    def __init__ (self, file):
+        self.file = file  
     
+
+
+
+    """
+    Generar código
+    -  Retorna el código HTML generado. 
+    """
     def generate_code (self):
+        pass
+        """
         output =""
         if self.attributes["REDIR"] == "HTMA": 
             files_to_redir = [link for link in self.list_directory_files() if ".htma" in link ] 
@@ -161,10 +168,7 @@ class CGenerator ():
             pass
         elif self.attributes["REDIR"] == "OTHER": 
             pass
-
-
-print (block.generate_code())
-
+        """
 """
 [HTMA=
     DIR: .;
