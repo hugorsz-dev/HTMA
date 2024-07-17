@@ -9,5 +9,23 @@
       <h1 id="HTMA-TITLE"> Sitio web de funcionamiento teorico </h1>
       <h2 id="HTMA-DESCRIPTION"> Esto es un subtítulo </h2> 
     </header>
+
+    <nav>   
+      <HTMA!> 
+				DIR: web_prueba/articulos;
+				REDIR: HTMA;
+				FORMAT: {
+					<a href="$DIR-LINKS$">
+						<h3> $HTMLA_TITLE$ </h3>
+						<p> $HTMA_DESCRIPTION$ </p>
+					</a>
+				};
+			</HTMA>
+    </nav>
+  </body>
+
+
+
+
 	
 </html> 

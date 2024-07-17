@@ -138,18 +138,33 @@ class WBlock ():
                 output.append(path)  
         return output 
         
-    
-block = WBlock('DIR: web_prueba; REDIR: HTMA; FORMAT: { <a href="$LINK_FOR_EACH_FILE_IN_DIR$"> <h3> $HTMA_TITLE$ </h3> <p> $HTMA_DESCRIPTION$ </p> </a> }')
+block = WBlock('     DIR: web_prueba; REDIR: HTMA; FORMAT: { <a href="$LINK_FOR_EACH_FILE_IN_DIR$"> <h3> $HTMA_TITLE$ </h3> <p> $HTMA_DESCRIPTION$ </p> </a> }')
 block.set_format_htm_ids(input_path+"/articulos.htma")
 print (block.attributes)
 
-class CGenerator ():
+class HTMAFile ():
+        
+    """
+    Constructor 
+    -   Recibe el string de la ubicación de un archivo 
+    """
 
-    def __init__ (self, file):
-        self.file = file  
+    def __init__ (self, htm_path):
+        self.blocks = self.file_to_blocks(htm_path)
     
-
-
+    """
+    Archivo a bloques
+    -   Utilidad del constructor, retorna un array de bloques (clase WBlock) con la que operará toda la clase
+    -   Recorre todo el archivo y extrae los bloques HTMA entre las etiquetas <HTMA!> y </HTMA>
+    """
+    
+    def file_to_blocks (self, htm_path):
+        with open(htm_path, "r",  encoding="utf-8") as file:
+            htm = file.read().replace("\n","").replace("\t","")
+        
+        htm_blocks = (re.split("<HTMA|</HTMA>", htm))
+        output = [block for block in htm_blocks if "!>" in block]
+        return [block.replace("!>","") for block in output]
 
     """
     Generar código
@@ -169,6 +184,9 @@ class CGenerator ():
         elif self.attributes["REDIR"] == "OTHER": 
             pass
         """
+
+file = WFile ("web_prueba/otros.htma")
+print (file.blocks)
 """
 [HTMA=
     DIR: .;
