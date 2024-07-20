@@ -9,11 +9,16 @@ import markdown
 input_path= "/home/hugo/eclipse-workspace/programacionPyton/autoweb/web_prueba"
 output_path= "/home/hugo/eclipse-workspace/programacionPyton/autoweb/salida_prueba"
 
+
+        
+def obtain_name_from_path(path):
+    head, tail = os.path.split(path)
+    return tail or os.path.basename(head)
+
 """
 El objetivo de la clase wblock es devolver los bloques HTMA correctamente formateados en formato
 de String
 """
-
 class WBlock ():
     
     """
@@ -86,10 +91,6 @@ class WBlock ():
     """
     
     def set_format_htm_ids (self, path):  
-        
-        def obtain_name_from_path(path):
-            head, tail = os.path.split(path)
-            return tail or os.path.basename(head)
 
         """
         IDs de HTML o HTMA
@@ -119,6 +120,7 @@ class WBlock ():
         for label in htm_ids(path):
             output = output.replace("$"+label+"$", htm_ids(path)[label]) 
         output = output.replace ("$LINK_FOR_EACH_FILE_IN_DIR$", obtain_name_from_path(path).replace("htma", "html"))
+        
         self.attributes["FORMAT"] = output
      
     """
@@ -137,10 +139,29 @@ class WBlock ():
             if os.path.isfile(os.path.join(self.attributes["DIR"], path)):
                 output.append(path)  
         return output 
+
+
+    """
+    Generar código
+    -   Genera el código en base al FORMAT del bloque
+    """
+
+    def generate_code (self):
+        output =""
+        if self.attributes["REDIR"] =="HTMA":
+            for file in self.list_directory_files():
+                self.set_format_htm_ids(self.attributes["DIR"]+os.sep+file)
+                output = output + self.attributes["FORMAT"]
+                self.attributes["FORMAT"] = self.attributes["FORMAT"].replace (obtain_name_from_path(self.attributes["DIR"]+os.sep+file).replace("htma","html"),"$LINK_FOR_EACH_FILE_IN_DIR$",1)
+
+
+        
+        return output
         
 block = WBlock('     DIR: web_prueba; REDIR: HTMA; FORMAT: { <a href="$LINK_FOR_EACH_FILE_IN_DIR$"> <h3> $HTMA_TITLE$ </h3> <p> $HTMA_DESCRIPTION$ </p> </a> }')
-block.set_format_htm_ids(input_path+"/articulos.htma")
-print (block.attributes)
+#block.set_format_htm_ids(input_path+"/articulos.htma")
+#print (block.attributes)
+print (block.generate_code())
 
 class HTMAFile ():
         
@@ -159,34 +180,24 @@ class HTMAFile ():
     """
     
     def file_to_blocks (self, htm_path):
+        output = []
         with open(htm_path, "r",  encoding="utf-8") as file:
             htm = file.read().replace("\n","").replace("\t","")
         
         htm_blocks = (re.split("<HTMA|</HTMA>", htm))
-        output = [block for block in htm_blocks if "!>" in block]
-        return [block.replace("!>","") for block in output]
+        string_blocks = [block for block in htm_blocks if "!>" in block]
+        string_blocks = [block.replace("!>","") for block in string_blocks]
 
-    """
-    Generar código
-    -  Retorna el código HTML generado. 
-    """
-    def generate_code (self):
-        pass
-        """
-        output =""
-        if self.attributes["REDIR"] == "HTMA": 
-            files_to_redir = [link for link in self.list_directory_files() if ".htma" in link ] 
-            for link in files_to_redir:
-                print (link)
+        for block in string_blocks: 
+            output.append(WBlock(block))
 
-        elif self.attributes["REDIR"] == "MD": 
-            pass
-        elif self.attributes["REDIR"] == "OTHER": 
-            pass
-        """
+        return output
+    
+#file = HTMAFile ("web_prueba/otros.htma")
 
-file = WFile ("web_prueba/otros.htma")
-print (file.blocks)
+#for block in file.blocks:
+#    print (block.attributes) 
+
 """
 [HTMA=
     DIR: .;
