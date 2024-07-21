@@ -153,6 +153,10 @@ class WBlock ():
                 self.set_format_htm_ids(self.attributes["DIR"]+os.sep+file)
                 output = output + self.attributes["FORMAT"]
                 self.attributes["FORMAT"] = self.attributes["FORMAT"].replace (obtain_name_from_path(self.attributes["DIR"]+os.sep+file).replace("htma","html"),"$LINK_FOR_EACH_FILE_IN_DIR$",1)
+        elif self.attributes["REDIR"]=="MD":
+            pass
+        elif self.attributes["REDIR"]=="OTHER":
+            pass
 
 
         
@@ -161,7 +165,7 @@ class WBlock ():
 block = WBlock('     DIR: web_prueba; REDIR: HTMA; FORMAT: { <a href="$LINK_FOR_EACH_FILE_IN_DIR$"> <h3> $HTMA_TITLE$ </h3> <p> $HTMA_DESCRIPTION$ </p> </a> }')
 #block.set_format_htm_ids(input_path+"/articulos.htma")
 #print (block.attributes)
-print (block.generate_code())
+#print (block.generate_code())
 
 class HTMAFile ():
         
@@ -171,7 +175,9 @@ class HTMAFile ():
     """
 
     def __init__ (self, htm_path):
-        self.blocks = self.file_to_blocks(htm_path)
+        with open(htm_path, "r",  encoding="utf-8") as file:
+            self.htm = file.read().replace("\n","").replace("\t","")
+        self.blocks = self.file_to_blocks()
     
     """
     Archivo a bloques
@@ -179,12 +185,11 @@ class HTMAFile ():
     -   Recorre todo el archivo y extrae los bloques HTMA entre las etiquetas <HTMA!> y </HTMA>
     """
     
-    def file_to_blocks (self, htm_path):
+    def file_to_blocks (self):
         output = []
-        with open(htm_path, "r",  encoding="utf-8") as file:
-            htm = file.read().replace("\n","").replace("\t","")
         
-        htm_blocks = (re.split("<HTMA|</HTMA>", htm))
+
+        htm_blocks = (re.split("<HTMA|</HTMA>", self.htm))
         string_blocks = [block for block in htm_blocks if "!>" in block]
         string_blocks = [block.replace("!>","") for block in string_blocks]
 
@@ -192,12 +197,42 @@ class HTMAFile ():
             output.append(WBlock(block))
 
         return output
-    
-#file = HTMAFile ("web_prueba/otros.htma")
+
+    """
+    Generar HTML
+    -   Genera un documento HTML, sustituyendo los bloques HTMA por su correspondiente código, recogido de cada objeto bloque. 
+    """
+
+    def generate_html (self):
+        output = []
+        htm_blocks = (re.split("<HTMA|</HTMA>", self.htm))
+
+        counter = 0
+        for i in range(len(htm_blocks)):
+            if "!>" in htm_blocks[i]:
+                output.append(self.blocks[counter].generate_code())
+                counter = counter +1
+            else:
+                output.append(htm_blocks[i])
+        return ' '.join(output);             
+
+
+                
+
+
+
+
+
+
+
+
+
+file = HTMAFile ("web_prueba/index.htma")
 
 #for block in file.blocks:
 #    print (block.attributes) 
 
+print (file.generate_html())
 """
 [HTMA=
     DIR: .;
