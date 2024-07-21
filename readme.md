@@ -1,3 +1,6 @@
-# autoweb - HTMA 
+# HTMA: *HTML Template to Markdown Automator*
 
-Markup language with tags, under development, that creates static websites based on directory structures and markdown language.
+> [!note]
+> This project is under development
+
+Markup language with tags that creates static websites based on directory structures and markdown language.
