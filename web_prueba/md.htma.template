@@ -1,0 +1,19 @@
+<html>
+
+<body>
+    <head> 
+        <h1> Página web de prueba </h1> 
+        <h2> Esto es una página de prueba, aquí te mostraré un artículo </h2>
+    </head>
+    
+    <main> 
+        <div class="markdown">
+            $MARKDOWN$
+        </div> 
+    </main> 
+
+    <footer>
+        <p> Esto es un footer </p>
+    </footer>
+
+</html> 

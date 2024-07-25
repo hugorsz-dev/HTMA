@@ -32,9 +32,11 @@
 		REDIR: MD;
 		REDIR_LIMIT: 3;
 		ORDER_BY: $DOCUMENT_DATE$;
-		CHARACTER_LIMIT_PER_LABEL: article, 25 |  ; 
+		CHARACTER_LIMIT_PER_LABEL: p, 25 |  ; 
+		MD_FORMAT: web_prueba/md.format
 		FORMAT: {
 			<article>
+				<img src=$MD-IMAGE$>
 				<a href="$DIR-LINKS$">$DOCUMENT_NAME$</a>
 				$DOCUMENT_BODY_PLAIN$ 
 			</article>
