@@ -3,6 +3,7 @@
 # HTMA
 
 import os
+import shutil
 import re 
 import markdown2
 
@@ -10,7 +11,6 @@ input_path= "/home/hugo/eclipse-workspace/programacionPyton/autoweb/web_prueba"
 output_path= "/home/hugo/eclipse-workspace/programacionPyton/autoweb/salida_prueba"
 
 
-        
 def obtain_name_from_path(path):
     head, tail = os.path.split(path)
     return tail or os.path.basename(head)
@@ -177,6 +177,10 @@ class WBlock ():
             markdown_html_output = self.attributes["MD_TEMPLATE"].replace("$MARKDOWN$",markdown_html)
             print (markdown_html_output)
 
+            # Output. 
+
+
+
         elif self.attributes["REDIR"]=="OTHER":
             pass
 
@@ -184,7 +188,7 @@ class WBlock ():
         
         return output
         
-block = WBlock('     DIR: web_prueba; REDIR: HTMA; TEMPLATE: { <a href="$LINK_FOR_EACH_FILE_IN_DIR$"> <h3> $HTMA_TITLE$ </h3> <p> $HTMA_DESCRIPTION$ </p> </a> }')
+#block = WBlock('     DIR: web_prueba; REDIR: HTMA; TEMPLATE: { <a href="$LINK_FOR_EACH_FILE_IN_DIR$"> <h3> $HTMA_TITLE$ </h3> <p> $HTMA_DESCRIPTION$ </p> </a> }')
 #block.set_format_htm_ids(input_path+"/articulos.htma")
 #print (block.attributes)
 #print (block.generate_code())
@@ -238,23 +242,49 @@ class HTMAFile ():
                 output.append(htm_blocks[i])
         return ' '.join(output);             
 
+class HTMAProject ():
+    def __init__ (self, path, target):
+        self.path = path
+        self.target = target
+    
+    """"
+    Función que se encarga de clonar los ficheros de un proyecto htma
+    """
 
-                                    
+    def generate_target (self):
+        if self.target == ".": self.target =""
+        else: self.target = self.target+os.sep
+
+        try:
+            shutil.rmtree (self.target+"target")
+        except: 
+            print ("Directory 'target' does no exist in specified directory, creating...")
+
+        for root, dirs, files in os.walk(self.path):
+            target_directory = root.replace(self.path, self.target+'target')
+            os.mkdir (target_directory)
+
+            for file in files:
+               file_extension= file.split(".")[-1]
+               file_name= file.split(".")[0]
+               if file_extension == "htma" or file_extension =="md":
+                with open (target_directory+os.sep+file_name+".html", "w") as file:
+                    pass
+                    # TODO
+                    # Este método deberá emplear HTMAFile para generar el código e introducirlo en cada uno de los ficheros HTML
+                    # Para eso será necesario pasarle por parámetro el contenido de "root"+"file" facilitado en este mismo for. 
+
+project = HTMAProject("web_prueba", "main")
+project.generate_target()
 
 
 
-
-
-
-
-
-
-file = HTMAFile ("web_prueba/index.htma")
+#file = HTMAFile ("web_prueba/index.htma")
 
 #for block in file.blocks:
 #    print (block.attributes) 
 
-print (file.generate_html())
+#print (file.generate_html())
 """
 [HTMA=
     DIR: .;
