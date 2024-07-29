@@ -6,8 +6,7 @@
 
   <body>
     <header>
-      <h1 id="HTMA-TITLE"> Sitio web de funcionamiento teorico </h1>
-      <h2 id="HTMA-DESCRIPTION"> Esto es un subtítulo </h2> 
+      <h1 id="HTMA_TITLE"> Etiqueta título de noticias </h1>
+      <h2 id="HTMA_DESCRIPTION"> Etiqueta description de noticias </h2> 
     </header>
-	
 </html> 

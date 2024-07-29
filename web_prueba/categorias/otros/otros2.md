@@ -1,5 +1,3 @@
-![Texto alternativo](https://via.placeholder.com/150)
-
 # Título de nivel 1
 
 ## Título de nivel 2

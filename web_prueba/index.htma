@@ -5,15 +5,15 @@
 
   <body>
     <header>
-      <h1 id="HTMA-TITLE"> Sitio web de funcionamiento teorico </h1>
-      <h2 id="HTMA-DESCRIPTION"> Esto es un subtítulo </h2> 
+      <h1> Índice de mi sitio web</h1>
+      <h2> Subtítulo de mi sitio web </h2> 
     </header>
 
     <nav>   
       <HTMA!> 
-        DIR: web_prueba/categorias;  
-        REDIR: HTMA; 
-        TEMPLATE: { 
+        DIR:: web_prueba/categorias;  
+        REDIR:: HTMA; 
+        TEMPLATE:: { 
           <a href="$LINK_FOR_EACH_FILE_IN_DIR$"> 
           <h3> $HTMA_TITLE$ </h3> 
           <p> $HTMA_DESCRIPTION$ </p> 
@@ -24,13 +24,29 @@
 
     <main>
       <HTMA!> 
-        DIR: web_prueba/categorias/otros; 
-        REDIR: MD;
-        MD_TEMPLATE: web_prueba/md.htma.template;
-        TEMPLATE: {
+        DIR:: web_prueba/categorias/otros; 
+        REDIR:: MD;
+        MD_TEMPLATE:: web_prueba/md.htma.template;
+        TEMPLATE:: {
           <img src="$MD_IMG$">
           <a href="$LINK_FOR_EACH_FILE_IN_DIR$"> $MD_H1$ </a>
         };
       </HTMA> 
     </main>
+
+    <footer> 
+      <HTMA!> 
+        DIR:: web_prueba/categorias;  
+        REDIR:: HTMA; 
+        TEMPLATE:: { 
+          <p> Enlace de acceso:  <code> $LINK_FOR_EACH_FILE_IN_DIR$ </code> </p>
+          <p> Título: <code> $HTMA_TITLE$ </code> </p>
+          <p> Descripción: <code> $HTMA_DESCRIPTION$ </code> </p>
+          <p> Imagen: <code> $HTMA_IMAGE$ </code> </p>
+          }
+	     </HTMA>
+    </footer>
+      
+          
+
 </html> 

@@ -9,7 +9,7 @@ import markdown2
 
 input_path= "/home/hugo/eclipse-workspace/programacionPyton/autoweb/web_prueba"
 output_path= "/home/hugo/eclipse-workspace/programacionPyton/autoweb/salida_prueba"
-
+attributes_separator ="::"
 
 def obtain_name_from_path(path):
     head, tail = os.path.split(path)
@@ -50,7 +50,7 @@ class WBlock ():
                 if "{" in trace: 
                     trace = trace.split("{")[0].replace(" ", "")+ trace.split("{")[1].strip().replace("}", " ").strip() 
                 else: 
-                    trace = trace.split(":")[0].replace(" ", "")+":"+ trace.split(":")[1].strip()
+                    trace = trace.split(attributes_separator)[0].replace(" ", "")+attributes_separator+ trace.split(attributes_separator)[1].strip()
             except:
                 pass # Omitir registros basura
                 
@@ -62,8 +62,8 @@ class WBlock ():
 
         for trace in block: 
             try:
-                key = trace.split (":")[0]
-                value= trace.split (":")[1]
+                key = trace.split (attributes_separator)[0]
+                value= trace.split (attributes_separator)[1]
                 attributes[key]=value; 
             except: 
                 raise Exception ("Formatting error at attribute at:", key, value)
@@ -95,17 +95,21 @@ class WBlock ():
         -   Código:
                 block = WBlock('DIR: $ROOT$; REDIR: HTMA; TEMPLATE: { <a href="$DIR_LINKS$"> <h3> $HTMA_TITLE$ </h3> <p> $HTMA_DESCRIPTION$ </p> </a> }')
                 print (input_path+"/articulos/articulos.htma")
-                block.set_format_htm_ids(input_path+"/articulos/articulos.htma")
+                block.get_format_htm_ids(input_path+"/articulos/articulos.htma")
                 print (block.attributes)
         -   Salida:
                 {'DIR': '/home/hugo/eclipse-workspace/programacionPyton/autoweb/web_prueba', 'REDIR': 'HTMA', 'TEMPLATE': '<a href="articulos.html"> <h3> Sitio web de funcionamiento teorico </h3> <p> Esto es un subtítuloa </p> </a>'}
     
     Será necesario que para cada bloque se conozca exactamente el fichero al que hace referencia.
     El uso de este método modificará el atributo TEMPLATE, por lo que es fundamental 
-    
+
+    TODO
+    -   MEDIA GRAVEDAD: que las etiquetas contengan un limite $HTMA_DESCRIPTION(25)$ de caracteres y que 
+    cuando se realice la operación de sustitución, se corte la frase. (esto se podria hacer con javascript, no es prioritario)
+
     """
     
-    def set_format_htm_ids (self, path):  
+    def get_format_htm_ids (self, path):  
 
         """
         IDs de HTML o HTMA
@@ -134,10 +138,24 @@ class WBlock ():
         
         for label in htm_ids(path):
             output = output.replace("$"+label+"$", htm_ids(path)[label]) 
+        
+        # Variables globales. 
+
         output = output.replace ("$LINK_FOR_EACH_FILE_IN_DIR$", obtain_name_from_path(path).replace("htma", "html"))
         
-        self.attributes["TEMPLATE"] = output
-     
+        return output
+
+    """
+    TODO AL PRINCIPIO
+    Extraer atributos markdown
+    -   Extrae algunos atributos preferentes del archivo markdown y los presenta en un diccionario
+    """
+
+    def get_md_attributes  (self, path):  
+        output = {}
+            with open(htm_path, "r",  encoding="utf-8") as file:
+                htm = file.read().split(">")
+        
     """
     Listar archivos del directorio
     -   Lista los archivos que encuentra en la ruta del atributo "DIR"
@@ -159,23 +177,29 @@ class WBlock ():
     """
     Generar código
     -   Genera el código en base al TEMPLATE del bloque
+    TODO
+    -   POCA GRAVEDAD: eliminar las etiquetas en las que estén insertadas variables que no existen.
     """
 
     def generate_code (self):
         output =""
         if self.attributes["REDIR"] =="HTMA":
             for file in self.list_directory_files():
-                self.set_format_htm_ids(self.attributes["DIR"]+os.sep+file)
-                output = output + self.attributes["TEMPLATE"]
-                self.attributes["TEMPLATE"] = self.attributes["TEMPLATE"].replace (obtain_name_from_path(self.attributes["DIR"]+os.sep+file).replace("htma","html"),"$LINK_FOR_EACH_FILE_IN_DIR$",1)
+                print (self.get_format_htm_ids(self.attributes["DIR"]+os.sep+file))
+                output = output + self.get_format_htm_ids(self.attributes["DIR"]+os.sep+file)
         elif self.attributes["REDIR"]=="MD":
             # TODO: La generación de código en markdown es diferente, porque se bifurca en "MD_TEMPLATE". Hay que ver cómo trabajar con esto
             for file in self.list_directory_files():
                 with open(self.attributes["DIR"]+os.sep+file, "r",  encoding="utf-8") as mfile:
                     markdown_html= markdown2.markdown(mfile.read(), extras=["tables", "fenced-code-blocks"])
+            
+                #output = output + self.attributes["TEMPLATE"]
+
+
+
             # Código que tendría que corresponder a otros1.html 
-            markdown_html_output = self.attributes["MD_TEMPLATE"].replace("$MARKDOWN$",markdown_html)
-            print (markdown_html_output)
+            #markdown_html_output = self.attributes["MD_TEMPLATE"].replace("$MARKDOWN$",markdown_html)
+            #print (markdown_html_output)
 
             # Output. 
 
@@ -189,7 +213,7 @@ class WBlock ():
         return output
         
 #block = WBlock('     DIR: web_prueba; REDIR: HTMA; TEMPLATE: { <a href="$LINK_FOR_EACH_FILE_IN_DIR$"> <h3> $HTMA_TITLE$ </h3> <p> $HTMA_DESCRIPTION$ </p> </a> }')
-#block.set_format_htm_ids(input_path+"/articulos.htma")
+#block.get_format_htm_ids(input_path+"/articulos.htma")
 #print (block.attributes)
 #print (block.generate_code())
 
@@ -248,7 +272,10 @@ class HTMAProject ():
         self.target = target
     
     """"
-    Función que se encarga de clonar los ficheros de un proyecto htma
+    Generar target
+    -   Función que se encarga de clonar los ficheros de un proyecto htma
+    TODO
+    -   Este será el bucle en torno al que girarán todas las clases del proyecto.
     """
 
     def generate_target (self):
@@ -274,17 +301,17 @@ class HTMAProject ():
                     # Este método deberá emplear HTMAFile para generar el código e introducirlo en cada uno de los ficheros HTML
                     # Para eso será necesario pasarle por parámetro el contenido de "root"+"file" facilitado en este mismo for. 
 
-project = HTMAProject("web_prueba", "main")
-project.generate_target()
+#project = HTMAProject("web_prueba", "main")
+#project.generate_target()
 
 
 
-#file = HTMAFile ("web_prueba/index.htma")
+file = HTMAFile ("web_prueba/index.htma")
 
 #for block in file.blocks:
 #    print (block.attributes) 
 
-#print (file.generate_html())
+print (file.generate_html())
 """
 [HTMA=
     DIR: .;
