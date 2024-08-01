@@ -17,7 +17,7 @@ def obtain_name_from_path(path):
 
 """
 El objetivo de la clase wblock es devolver los bloques HTMA correctamente TEMPLATEeados en TEMPLATEo
-de String
+de String.
 """
 class WBlock ():
     
