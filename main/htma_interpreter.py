@@ -150,6 +150,7 @@ class WBlock ():
     -   Extrae algunos atributos preferentes del archivo markdown y los presenta en un diccionario
     con sus partes numeradas (parrafos, imagenes, posiblemente listas en el futuro..), su principal función será la de ejecutarse en la 
     función de generate_code para sustituir las variables introducidas por el el usuario en los ficheros HTMA
+    - TODO: realizar la sustitución, teniendo en cuenta la existencia de variables iterables como quote, code, ... parecidas en cierto modo a $LINK_FOR_EACH_FILE_IN_DIR$
     """
 
     def get_md_attributes  (self, md_path):  
@@ -163,20 +164,41 @@ class WBlock ():
         # MD_IMG... (memoria)
         img_counter = -1
 
+        # MD_URL --- (memoria)
+        url_counter = -1
+
+        #MD_QUOTE ... (memoria)
+        md_counter = -1 
+        md_bufer = -1
+
         # Asignación de variables
         for line in md:
+
+            line = line.strip ()
+            
             # MD_HEADERS       
-            if "#" in line and not "\#" in line:
+            if line [0:1] == "#":
                 # Calcula el primer caracter que no es un "#" en la cadena, consecuentemente arrojando en el "index" su valor (1,6)
                 match = (re.search(r'[^#]', line))
                 index = match.start()
                 h_counter[index] = h_counter[index]+1
-                output["MD_H"+str(index)+"["+str(h_counter[index])+"]"] = line.replace ("#", "")
+                output["MD_H"+str(index)+"["+str(h_counter[index])+"]"] = line.replace ("#", "").strip()
             # MD_IMG
-            if "![" in line and not "\!" in line:
+            if "![" in line and "](" in line and not r"\!" in line:
                 img_counter = img_counter +1
                 find = re.findall(r'\(.*?\)', line)
                 output ["MD_IMG"+"["+str(img_counter)+"]"] = find [0].replace ("(", "").replace(")","")
+
+            # MD_URL 
+            if "[" in line and  "](" in line and not r"\[" in line:
+                url_counter = img_counter +1
+                find = re.findall(r'\(.*?\)', line)
+                output ["MD_URL"+"["+str(url_counter)+"]"] = find [0].replace ("(", "").replace(")","")
+
+            # MD_QUOTE
+            if line [0:1] == ">":
+                pass
+
                 
             # TODO AL PRINCIPIO: Sacar texto plano, enlaces... listas... (prescindible) ir completando los scrappings a medida que HTMA lo necesita
             # Especialmente el texto plano debería admitir modificadores como (25) o algo así, hay que estudiar como hacerlo   
@@ -216,7 +238,6 @@ class WBlock ():
         output =""
         if self.attributes["REDIR"] =="HTMA":
             for file in self.list_directory_files():
-                print (self.get_format_htm_ids(self.attributes["DIR"]+os.sep+file))
                 output = output + self.get_format_htm_ids(self.attributes["DIR"]+os.sep+file)
         elif self.attributes["REDIR"]=="MD":
             # TODO: La generación de código en markdown es diferente, porque se bifurca en "MD_TEMPLATE". Hay que ver cómo trabajar con esto
