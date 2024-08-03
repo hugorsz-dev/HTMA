@@ -35,16 +35,6 @@
     </main>
 
     <footer> 
-      <HTMA!> 
-        DIR:: web_prueba/categorias;  
-        REDIR:: HTMA; 
-        TEMPLATE:: { 
-          <p> Enlace de acceso:  <code> $LINK_FOR_EACH_FILE_IN_DIR$ </code> </p>
-          <p> Título: <code> $HTMA_TITLE$ </code> </p>
-          <p> Descripción: <code> $HTMA_DESCRIPTION$ </code> </p>
-          <p> Imagen: <code> $HTMA_IMAGE$ </code> </p>
-          }
-	     </HTMA>
     </footer>
       
           

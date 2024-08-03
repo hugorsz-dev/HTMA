@@ -15,6 +15,7 @@
 >[!note] ¡Antes de esto!
 >Fusionar una rama con otra (cambiar a la rama anterior previamente con un `git checkout`)
 
+## Título de nivel 2
 ---
 
 **Negrita** o **bold**
@@ -28,7 +29,7 @@
 > Esto es una cita en bloque.
 > 
 > Puede tener varias líneas.
-
+## Título de nivel 2
 ---
 Listas:
 
@@ -41,7 +42,7 @@ Listas:
 2. Elemento de lista ordenada 2
    1. Sub-elemento 1
    2. Sub-elemento 2
-
+##### Título de nivel 5
 ---
 
 Código en línea: `console.log('Hola Mundo');`
@@ -53,7 +54,7 @@ let amigos = ["algo asi", "algo asa", "jiji", "jaja"];
 console.log ("jajajaja"); 
 console.log (amigos)
 ```
-
+## Título de nivel 2
 
 Tablas:
 
