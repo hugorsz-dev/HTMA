@@ -168,12 +168,16 @@ class WBlock ():
         url_counter = -1
 
         #MD_QUOTE ... (memoria)
-        md_counter = -1 
-        md_bufer = -1
+        quote_counter = -1 
+        quote_counter_bufer = []
+
+        # 
+        line_counter = -1
+        bufer_line_counter =0
 
         # Asignación de variables
         for line in md:
-
+            line_counter = line_counter +1
             line = line.strip ()
             
             # MD_HEADERS       
@@ -197,7 +201,16 @@ class WBlock ():
 
             # MD_QUOTE
             if line [0:1] == ">":
-                pass
+                print ("bufer line counter", bufer_line_counter+1)
+                print ("line counter", line_counter)
+                print ("--")
+                if (bufer_line_counter+1) == line_counter or bufer_line_counter==0:
+                    quote_counter_bufer.append (line)
+                else: 
+                    quote_counter = quote_counter+1 
+                    output ["MD_QUOTE"+"["+str(quote_counter)+"]"] = quote_counter_bufer
+                    quote_counter_bufer =[]
+                bufer_line_counter = line_counter
 
                 
             # TODO AL PRINCIPIO: Sacar texto plano, enlaces... listas... (prescindible) ir completando los scrappings a medida que HTMA lo necesita
