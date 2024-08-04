@@ -193,7 +193,7 @@ class WBlock ():
                 find = re.findall(r'\(.*?\)', line)
                 output ["MD_IMG"+"["+str(img_counter)+"]"] = find [0].replace ("(", "").replace(")","")
 
-            # MD_URL 
+            # MD_URL a
             if "[" in line and  "](" in line and not r"\[" in line:
                 url_counter = img_counter +1
                 find = re.findall(r'\(.*?\)', line)
