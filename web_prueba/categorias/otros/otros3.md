@@ -10,8 +10,8 @@
 
 ###### Título de nivel 6
 
->[!note] ¡Antes de esto!
->Fusionar una rama con otra (cambiar a la rama anterior previamente con un `git checkout`)
+> [!note] ¡Antes de esto!
+> Fusionar una rama con otra (cambiar a la rama anterior previamente con un `git checkout`)
 
 ---
 

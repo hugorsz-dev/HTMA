@@ -12,8 +12,8 @@
 
 ###### Título de nivel 6
 
->[!note] ¡Antes de esto!
->Fusionar una rama con otra (cambiar a la rama anterior previamente con un `git checkout`)
+> [!note] ¡Antes de esto!
+> Fusionar una rama con otra (cambiar a la rama anterior previamente con un `git checkout`)
 
 ## Título de nivel 2
 ---
@@ -124,3 +124,8 @@ odm-services --> odm-operations
 odm-services --> odm-frontend
 odm-rules --> odm-assembler
 ```
+
+### uno
+### dos 
+### tres 
+### cuatro

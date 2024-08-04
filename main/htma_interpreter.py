@@ -171,10 +171,10 @@ class WBlock ():
         quote_counter = -1 
         quote_counter_bufer = []
 
-        # 
+        #
         line_counter = -1
-        bufer_line_counter =0
-
+        bufer_line_counter = 0 
+        
         # Asignación de variables
         for line in md:
             line_counter = line_counter +1
@@ -187,39 +187,52 @@ class WBlock ():
                 index = match.start()
                 h_counter[index] = h_counter[index]+1
                 output["MD_H"+str(index)+"["+str(h_counter[index])+"]"] = line.replace ("#", "").strip()
+                # Array con todos los headers en su interior
+                try: 
+                    output["MD_H"+str(index)].append (line.replace ("#", "").strip())
+                except:
+                    output["MD_H"+str(index)] = []
+                    output["MD_H"+str(index)].append (line.replace ("#", "").strip())
             # MD_IMG
             if "![" in line and "](" in line and not r"\!" in line:
                 img_counter = img_counter +1
                 find = re.findall(r'\(.*?\)', line)
                 output ["MD_IMG"+"["+str(img_counter)+"]"] = find [0].replace ("(", "").replace(")","")
 
-            # MD_URL a
+            # MD_URL
             if "[" in line and  "](" in line and not r"\[" in line:
                 url_counter = img_counter +1
                 find = re.findall(r'\(.*?\)', line)
                 output ["MD_URL"+"["+str(url_counter)+"]"] = find [0].replace ("(", "").replace(")","")
 
             # MD_QUOTE
-            if line [0:1] == ">":
-                print ("bufer line counter", bufer_line_counter+1)
-                print ("line counter", line_counter)
-                print ("--")
+            if line [0:2] == "> " or line ==">":
+
                 if (bufer_line_counter+1) == line_counter or bufer_line_counter==0:
-                    quote_counter_bufer.append (line)
-                else: 
+                    quote_counter_bufer.append (line.replace(">", "").strip()) 
+                else:
+                    # Agregar la línea anterior
                     quote_counter = quote_counter+1 
                     output ["MD_QUOTE"+"["+str(quote_counter)+"]"] = quote_counter_bufer
-                    quote_counter_bufer =[]
-                bufer_line_counter = line_counter
-
-                
-            # TODO AL PRINCIPIO: Sacar texto plano, enlaces... listas... (prescindible) ir completando los scrappings a medida que HTMA lo necesita
-            # Especialmente el texto plano debería admitir modificadores como (25) o algo así, hay que estudiar como hacerlo   
+                    quote_counter_bufer =[] 
                     
+                    # Agregar la línea actual 
+                    quote_counter_bufer.append (line.replace(">","").strip())
+                
+                bufer_line_counter = line_counter
+ 
+        # MD_QUOTE Agregar última linea del bufer
+        if quote_counter_bufer != []:
+            output ["MD_QUOTE"+"["+str(quote_counter)+"]"] = quote_counter_bufer
 
-
+        #TODO
+        # - Los componentes del output que estén dispuestos en un array deben iterarse en etiquetas, p.ej: 
+        # "MD_H1:["titulo 1", "titulo 2"
+        # Si el usuario escribe: <ul> <li> $MD_H1 </li> </ul> el resultado sería:   
+        # <ul> <li> "titulo 1" </li> <li> "titulo 2" </li> </ul> 
+        # Especialmente el texto plano debería admitir modificadores como (25) o algo así, hay que estudiar como hacerlo   
+                
         print (output)
-        
         
         
     """
@@ -255,9 +268,11 @@ class WBlock ():
         elif self.attributes["REDIR"]=="MD":
             # TODO: La generación de código en markdown es diferente, porque se bifurca en "MD_TEMPLATE". Hay que ver cómo trabajar con esto
             for file in self.list_directory_files():
-                with open(self.attributes["DIR"]+os.sep+file, "r",  encoding="utf-8") as mfile:
-                    self.get_md_attributes (self.attributes["DIR"]+os.sep+file)
-                    markdown_html= markdown2.markdown(mfile.read(), extras=["tables", "fenced-code-blocks"])
+                md_file_path = self.attributes["DIR"]+os.sep+file
+                with open(md_file_path, "r",  encoding="utf-8") as mfile:
+                    if md_file_path.endswith (".md"):
+                        self.get_md_attributes (md_file_path)
+                        markdown_html= markdown2.markdown(mfile.read(), extras=["tables", "fenced-code-blocks"])
 
                     
             
