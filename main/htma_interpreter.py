@@ -7,6 +7,7 @@ import shutil
 import re 
 import markdown2
 
+target_path = "/home/hugo/eclipse-workspace/programacionPyton/autoweb"
 attributes_separator ="::"
 
 def obtain_name_from_path(path):
@@ -143,16 +144,12 @@ class WBlock ():
         
         return output
 
-
-    ########################### 
-
     def get_format_md (self, path): 
 
         """
         Atributos markdown
         -   Retorna un diccionario (clave, valor) con cada una de los valores markdown 
         """
-        #- TODO: realizar la sustitución, teniendo en cuenta la existencia de variables iterables como quote, code, ... parecidas en cierto modo a $LINK_FOR_EACH_FILE_IN_DIR$ - es decir, el código generado
 
         def md_ids (path):  
             output = {}
@@ -234,56 +231,94 @@ class WBlock ():
             if quote_counter_bufer != []:
                 output ["MD_QUOTE"+"["+str(quote_counter)+"]"] = quote_counter_bufer
 
+            # MARKDOWN TO HTML, etiqueta que contiene todo el documento
+            with open(path, "r",  encoding="utf-8") as file:
+                md = file.read()
+            output["MARKDOWN_TO_HTML"] = markdown2.markdown(md, extras=["tables", "fenced-code-blocks"])
+
+            return output   
+
+        """
+        Sustituye las variables de un string (template) por las variables de md_ids
+        """
+
+        def set_format_md (template):
+            output = template
+            md_ids_done=md_ids(path)
+
+            for label in md_ids_done:
+                if isinstance(md_ids_done[label], str):
+                    output = output.replace("$"+label+"$", md_ids_done[label]) 
+
+            # - Los componentes del output que estén dispuestos en un array deben iterarse en etiquetas, p.ej: 
+            # "MD_H1:["titulo 1", "titulo 2"
+            # Si el usuario escribe: <ul> <li> $MD_H1 </li> </ul> el resultado sería:   
+            # <ul> <li> "titulo 1" </li> <li> "titulo 2" </li> </ul> 
+
+            array_labels= re.findall(r'<\w+>\s*\$.*?\$\s*</\w+>',output)
+            for label in array_labels:
+                formatted_label = re.findall( r'<(\w+)>\s*\$(.*?)\$\s*</\1>', label)
+                bufer =""
+                for content in md_ids_done[formatted_label[0][1]]:
+                    bufer = bufer + f"<{formatted_label[0][0]}>{content}</{formatted_label[0][0]}>"
+                output = output.replace(label, bufer) 
+            
+            output = output.replace ("$LINK_FOR_EACH_FILE_IN_DIR$", obtain_name_from_path(path).replace("md", "html"))
+
             return output
 
-        #TODO
-        # CÓDIGO GENERADO EN EL RETORNO
-        # Especialmente el texto plano debería admitir modificadores como (25) o algo así, hay que estudiar como hacerlo   
+        # Formateo del markdown exportado 
+        with open (target_path+os.sep+"target"+path[path.find(os.sep):].replace(".md", ".html"), "w") as file:
+            file.write(set_format_md(self.attributes["MD_TEMPLATE"]))
 
-        output = self.attributes["TEMPLATE"]
+        # Formateo del markdown incrustado en el HTMA 
+        return set_format_md(self.attributes["TEMPLATE"])
         
-        for label in md_ids(path):
-            if isinstance(md_ids(path)[label], str):
-                output = output.replace("$"+label+"$", md_ids(path)[label]) 
-
-        
-        # - Los componentes del output que estén dispuestos en un array deben iterarse en etiquetas, p.ej: 
-        # "MD_H1:["titulo 1", "titulo 2"
-        # Si el usuario escribe: <ul> <li> $MD_H1 </li> </ul> el resultado sería:   
-        # <ul> <li> "titulo 1" </li> <li> "titulo 2" </li> </ul> 
-
-        array_labels= re.findall(r'<\w+>\s*\$.*?\$\s*</\w+>',output)
-        for label in array_labels:
-            formatted_label = re.findall( r'<(\w+)>\s*\$(.*?)\$\s*</\1>', label)
-            bufer =""
-            for content in md_ids (path)[formatted_label[0][1]]:
-                bufer = bufer + f"<{formatted_label[0][0]}>{content}</{formatted_label[0][0]}>"
-            output = output.replace(label, bufer) 
-            
-        #markdown_html= markdown2.markdown(mfile.read(), extras=["tables", "fenced-code-blocks"])
-
-        output = output.replace ("$LINK_FOR_EACH_FILE_IN_DIR$", obtain_name_from_path(path).replace("md", "html"))
-
-        # return output
-        return output
-        
-
-    #####################
     """
     Listar archivos del directorio
     -   Lista los archivos que encuentra en la ruta del atributo "DIR"
     -   Admite rutas relativas desde el punto en que se ejecuta el script. 
+    - TODO: Algunos parámetros de order by, dependientes de una etiqueta ORDER_BY
     """    
     def list_directory_files (self):
         output = []
         try:
             self.attributes["DIR"] 
         except:
-            raise Exception ("Directory label is missing in the block")
+            print ("\t Error: Directory label is missing in the block")
+            quit()
 
         for path in os.listdir(self.attributes["DIR"]):
             if os.path.isfile(os.path.join(self.attributes["DIR"], path)):
-                output.append(path)  
+                output.append(path) 
+        
+        # Clasificar cadena según el orden
+        if "ORDER_BY" in self.attributes:
+            if self.attributes["ORDER_BY"]=="ALPHABETICAL":
+                output = sorted(output)
+            elif self.attributes["ORDER_BY"]=="ALPHABETICAL_REVERSE":
+                output = sorted (output, reverse=True)
+            elif self.attributes["ORDER_BY"]=="DATE":
+                path_date=[]
+                for path in output:
+                    path_date.append ({"date":os.path.getmtime(self.attributes["DIR"]+os.sep+path), "path":path})
+                path_date= sorted (path_date, key= lambda dictionary: dictionary["date"], reverse=False)
+                output = []
+                for path in path_date:
+                    output.append(path["path"])
+            elif self.attributes["ORDER_BY"]=="DATE_REVERSE":
+                path_date=[]
+                for path in output:
+                    path_date.append ({"date":os.path.getmtime(self.attributes["DIR"]+os.sep+path), "path":path})
+                path_date= sorted (path_date, key= lambda dictionary: dictionary["date"], reverse=True)
+                output = []
+                for path in path_date:
+                    output.append(path["path"])
+            elif self.attributes["ORDER_BY"]=="SYSTEM":
+                pass
+            else:
+                print (f"\tWarning: Order method not found at ORDER_BY {self.attributes['ORDER_BY']}")
+
         return output 
 
 
@@ -304,28 +339,11 @@ class WBlock ():
             for file in self.list_directory_files():
                 md_file_path = self.attributes["DIR"]+os.sep+file
                 output = output + self.get_format_md (md_file_path)
-                        
-
-                    
-            
-                #output = output + self.attributes["TEMPLATE"]
-
-
-            # TODO: La generación de código en markdown es diferente, porque se bifurca en "MD_TEMPLATE". Hay que ver cómo trabajar con esto
-
-            # Código que tendría que corresponder a otros1.html 
-            #markdown_html_output = self.attributes["MD_TEMPLATE"].replace("$MARKDOWN$",markdown_html)
-            #print (markdown_html_output)
-
-            # Output. 
-
 
 
         elif self.attributes["REDIR"]=="OTHER":
             pass
 
-
-        
         return output
         
 #block = WBlock('     DIR: web_prueba; REDIR: HTMA; TEMPLATE: { <a href="$LINK_FOR_EACH_FILE_IN_DIR$"> <h3> $HTMA_TITLE$ </h3> <p> $HTMA_DESCRIPTION$ </p> </a> }')
@@ -390,8 +408,7 @@ class HTMAProject ():
     """"
     Generar target
     -   Función que se encarga de clonar los ficheros de un proyecto htma
-    TODO
-    -   Este será el bucle en torno al que girarán todas las clases del proyecto.
+    -   Este es el bucle en torno al que girarán todas las clases del proyecto.
     """
 
     def generate_target (self):
@@ -401,7 +418,9 @@ class HTMAProject ():
         try:
             shutil.rmtree (self.target+"target")
         except: 
-            print ("Directory 'target' does no exist in specified directory, creating...")
+            print ("Warning: Directory 'target' does no exist in specified directory, creating...")
+
+        # Generación de los ficheros vacíos, para evitar errores posteriores asociados a format_md
 
         for root, dirs, files in os.walk(self.path):
             target_directory = root.replace(self.path, self.target+'target')
@@ -412,15 +431,26 @@ class HTMAProject ():
                file_name= file.split(".")[0]
                if file_extension == "htma": #or file_extension =="md":
                 with open (target_directory+os.sep+file_name+".html", "w") as file:
-                    print (root+"/"+file_name+"."+file_extension)
-                    htmafile = HTMAFile (root+"/"+file_name+"."+file_extension)
+                    pass
+                    
+        for root, dirs, files in os.walk(self.path):
+            target_directory = root.replace(self.path, self.target+'target')
+
+            for file in files:
+               file_extension= file.split(".")[-1]
+               file_name= file.split(".")[0]
+               if file_extension == "htma": #or file_extension =="md":
+                with open (target_directory+os.sep+file_name+".html", "w") as file:
+                    print (root+os.sep+file_name+"."+file_extension)
+                    htmafile = HTMAFile (root+os.sep+file_name+"."+file_extension)
                     file.write( htmafile.generate_html()) 
                     
                     # TODO
                     # Este método deberá emplear HTMAFile para generar el código e introducirlo en cada uno de los ficheros HTML
                     # Para eso será necesario pasarle por parámetro el contenido de "root"+"file" facilitado en este mismo for. 
+            
 
-project = HTMAProject("web_prueba", "main")
+project = HTMAProject("web_prueba", target_path)
 project.generate_target()
 
 
