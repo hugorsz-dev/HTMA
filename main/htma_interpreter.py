@@ -7,8 +7,6 @@ import shutil
 import re 
 import markdown2
 
-input_path= "/home/hugo/eclipse-workspace/programacionPyton/autoweb/web_prueba"
-output_path= "/home/hugo/eclipse-workspace/programacionPyton/autoweb/salida_prueba"
 attributes_separator ="::"
 
 def obtain_name_from_path(path):
@@ -174,6 +172,9 @@ class WBlock ():
             quote_counter = -1 
             quote_counter_bufer = []
 
+            #MD_TEXT 
+            text_counter = -1
+
             #
             line_counter = -1
             bufer_line_counter = 0 
@@ -197,19 +198,19 @@ class WBlock ():
                         output["MD_H"+str(index)] = []
                         output["MD_H"+str(index)].append (line.replace ("#", "").strip())
                 # MD_IMG
-                if "![" in line and "](" in line and not r"\!" in line:
+                elif "![" in line and "](" in line and not r"\!" in line:
                     img_counter = img_counter +1
                     find = re.findall(r'\(.*?\)', line)
                     output ["MD_IMG"+"["+str(img_counter)+"]"] = find [0].replace ("(", "").replace(")","")
 
                 # MD_URL
-                if "[" in line and  "](" in line and not r"\[" in line:
+                elif "[" in line and  "](" in line and not r"\[" in line:
                     url_counter = img_counter +1
                     find = re.findall(r'\(.*?\)', line)
                     output ["MD_URL"+"["+str(url_counter)+"]"] = find [0].replace ("(", "").replace(")","")
 
                 # MD_QUOTE
-                if line [0:2] == "> " or line ==">":
+                elif line [0:2] == "> " or line ==">":
 
                     if (bufer_line_counter+1) == line_counter or bufer_line_counter==0:
                         quote_counter_bufer.append (line.replace(">", "").strip()) 
@@ -223,6 +224,11 @@ class WBlock ():
                         quote_counter_bufer.append (line.replace(">","").strip())
                     
                     bufer_line_counter = line_counter
+                # MD_TEXT
+                else:
+                    if line.strip()!="":
+                        text_counter = text_counter +1
+                        output ["MD_TEXT"+"["+str(text_counter)+"]"] = line
     
             # MD_QUOTE Agregar última linea del bufer
             if quote_counter_bufer != []:
@@ -240,23 +246,29 @@ class WBlock ():
             if isinstance(md_ids(path)[label], str):
                 output = output.replace("$"+label+"$", md_ids(path)[label]) 
 
+        
         # - Los componentes del output que estén dispuestos en un array deben iterarse en etiquetas, p.ej: 
         # "MD_H1:["titulo 1", "titulo 2"
         # Si el usuario escribe: <ul> <li> $MD_H1 </li> </ul> el resultado sería:   
         # <ul> <li> "titulo 1" </li> <li> "titulo 2" </li> </ul> 
 
-        for label in md_ids(path):
-            if isinstance(md_ids(path)[label], list):
-                output = output.replace("$"+label+"$", md_ids(path)[label]) 
+        array_labels= re.findall(r'<\w+>\s*\$.*?\$\s*</\w+>',output)
+        for label in array_labels:
+            formatted_label = re.findall( r'<(\w+)>\s*\$(.*?)\$\s*</\1>', label)
+            bufer =""
+            for content in md_ids (path)[formatted_label[0][1]]:
+                bufer = bufer + f"<{formatted_label[0][0]}>{content}</{formatted_label[0][0]}>"
+            output = output.replace(label, bufer) 
+            
         #markdown_html= markdown2.markdown(mfile.read(), extras=["tables", "fenced-code-blocks"])
 
         output = output.replace ("$LINK_FOR_EACH_FILE_IN_DIR$", obtain_name_from_path(path).replace("md", "html"))
 
         # return output
-        return ("\n\n\n\n"+output+"\n\n\n\n")
+        return output
         
 
-    #####################33 
+    #####################
     """
     Listar archivos del directorio
     -   Lista los archivos que encuentra en la ruta del atributo "DIR"
@@ -398,23 +410,24 @@ class HTMAProject ():
             for file in files:
                file_extension= file.split(".")[-1]
                file_name= file.split(".")[0]
-               if file_extension == "htma" or file_extension =="md":
+               if file_extension == "htma": #or file_extension =="md":
                 with open (target_directory+os.sep+file_name+".html", "w") as file:
-                    pass
+                    print (root+"/"+file_name+"."+file_extension)
+                    htmafile = HTMAFile (root+"/"+file_name+"."+file_extension)
+                    file.write( htmafile.generate_html()) 
+                    
                     # TODO
                     # Este método deberá emplear HTMAFile para generar el código e introducirlo en cada uno de los ficheros HTML
                     # Para eso será necesario pasarle por parámetro el contenido de "root"+"file" facilitado en este mismo for. 
 
-#project = HTMAProject("web_prueba", "main")
-#project.generate_target()
+project = HTMAProject("web_prueba", "main")
+project.generate_target()
 
 
-file = HTMAFile ("web_prueba/index.htma")
-
+#file = HTMAFile ("web_prueba/index.htma")
 #for block in file.blocks:
 #    print (block.attributes) 
-
-print (file.generate_html())
+#print (file.generate_html())
 """
 [HTMA=
     DIR: .;
