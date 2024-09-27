@@ -5,6 +5,7 @@
 import os
 import shutil
 import re 
+import datetime
 import markdown2
 
 target_path = "/home/hugo/eclipse-workspace/programacionPyton/autoweb"
@@ -139,8 +140,14 @@ class WBlock ():
             output = output.replace("$"+label+"$", htm_ids(path)[label]) 
         
         # Variables globales. 
-
+        
+        # Enlace de cada archivo 
         output = output.replace ("$LINK_FOR_EACH_FILE_IN_DIR$", obtain_name_from_path(path).replace("htma", "html"))
+        
+        # Fecha  de creación de cada archivo
+        date_of_file_creation = os.path.getmtime(path)
+        date_of_file_creation = datetime.datetime.fromtimestamp(date_of_file_creation)
+        output = output.replace("$DATE_FOR_EACH_FILE_IN_DIR$", date_of_file_creation.strftime('%Y-%m-%d'))
         
         return output
 
@@ -263,6 +270,12 @@ class WBlock ():
                     bufer = bufer + f"<{formatted_label[0][0]}>{content}</{formatted_label[0][0]}>"
                 output = output.replace(label, bufer) 
             
+            # Hora de creación de cada archivo
+            date_of_file_creation = os.path.getmtime(path)
+            date_of_file_creation = datetime.datetime.fromtimestamp(date_of_file_creation)
+            output = output.replace("$DATE_FOR_EACH_FILE_IN_DIR$", date_of_file_creation.strftime('%Y-%m-%d'))
+            
+            # Enlace para cada archivo.
             output = output.replace ("$LINK_FOR_EACH_FILE_IN_DIR$", obtain_name_from_path(path).replace("md", "html"))
 
             return output
@@ -321,6 +334,21 @@ class WBlock ():
 
         return output 
 
+    """
+    Sustituye las etiquetas globales, que son comunes a todos los fomatos de archivo
+    Algunas de estas pueden ser la fecha, la hora, el nombre del archivo...
+    """
+
+    def get_format_global (self, input):
+        output = input
+
+        # Hora en la ejecución del script.
+        output = output.replace("$DATE_OF_TODAY$", str (datetime.date.today()))
+
+        # Nombre de la carpeta donde el script es ejecutado
+        # TODO
+
+        return output
 
     """
     Generar código
@@ -343,6 +371,8 @@ class WBlock ():
 
         elif self.attributes["REDIR"]=="OTHER":
             pass
+
+        output =  self.get_format_global (output)
 
         return output
         
