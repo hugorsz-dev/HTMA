@@ -8,12 +8,11 @@ import re
 import datetime
 import markdown2
 
-target_path = "/home/hugo/eclipse-workspace/programacionPyton/autoweb"
-attributes_separator ="::"
 
-def obtain_name_from_path(path):
-    head, tail = os.path.split(path)
-    return tail or os.path.basename(head)
+input_path ="/home/hugo/eclipse-workspace/programacionPyton/autoweb/web_prueba"
+target_path = "/home/hugo/eclipse-workspace/programacionPyton/autoweb"
+
+attributes_separator ="::"
 
 """
 El objetivo de la clase wblock es devolver los bloques HTMA correctamente TEMPLATEeados en TEMPLATEo
@@ -29,8 +28,6 @@ class WBlock ():
     def __init__ (self, block):
         self.block = block
         self.attributes = self.block_string_to_attributes (block)
-        
-    # MÉTODOS
 
     """
     Bloque en string convertido en atributos. 
@@ -102,11 +99,6 @@ class WBlock ():
     
     Será necesario que para cada bloque se conozca exactamente el fichero al que hace referencia.
     El uso de este método modificará el atributo TEMPLATE, por lo que es fundamental 
-
-    TODO
-    -   MEDIA GRAVEDAD: que las etiquetas contengan un limite $HTMA_DESCRIPTION(25)$ de caracteres y que 
-    cuando se realice la operación de sustitución, se corte la frase. (esto se podria hacer con javascript, no es prioritario)
-
     """
     
     def get_format_htm_ids (self, path):  
@@ -139,20 +131,8 @@ class WBlock ():
         for label in htm_ids(path):
             output = output.replace("$"+label+"$", htm_ids(path)[label]) 
         
-        # Variables globales. 
-        
-        # Enlace de cada archivo 
-        output = output.replace ("$LINK_FOR_EACH_FILE_IN_DIR$", obtain_name_from_path(path).replace("htma", "html"))
-        
-        # Fecha  de creación de cada archivo
-        creation_time = os.path.getctime(path)
-        creation_time = datetime.datetime.fromtimestamp(creation_time)
-        output = output.replace("$CREATION_TIME_FOR_EACH_FILE_IN_DIR$", creation_time.strftime('%Y-%m-%d'))
-
-        # Fecha  de última modificación de cada archivo
-        last_modification_time =  os.path.getmtime(path)
-        last_modification_time = datetime.datetime.fromtimestamp (last_modification_time)
-        output = output.replace("$LAST_MODIFICATION_TIME_FOR_EACH_FILE_IN_DIR$", last_modification_time.strftime('%Y-%m-%d'))
+        # VARIABLES GLOBALES
+        output = self.get_format_global (output, path)
         
         return output
 
@@ -247,6 +227,7 @@ class WBlock ():
             
             with open(path, "r",  encoding="utf-8") as file:
                 md = file.read()
+                
             output["MARKDOWN_TO_HTML"] = markdown2.markdown(md, extras=["tables", "fenced-code-blocks"])
 
             return output   
@@ -279,20 +260,8 @@ class WBlock ():
                 except:
                     pass # Las etiquetas que no son especiales de markdown pasarán por aquí
 
-            # Fecha  de creación de cada archivo
-            creation_time = os.path.getctime(path)
-            creation_time = datetime.datetime.fromtimestamp(creation_time)
-            output = output.replace("$CREATION_TIME_FOR_EACH_FILE_IN_DIR$", creation_time.strftime('%Y-%m-%d'))
-
-            # Fecha  de última modificación de cada archivo
-            last_modification_time =  os.path.getmtime(path)
-            last_modification_time = datetime.datetime.fromtimestamp (last_modification_time)
-            output = output.replace("$LAST_MODIFICATION_TIME_FOR_EACH_FILE_IN_DIR$", last_modification_time.strftime('%Y-%m-%d'))
-            
-            # Enlace para cada archivo.
-            output = output.replace ("$LINK_FOR_EACH_FILE_IN_DIR$", obtain_name_from_path(path).replace("md", "html"))
-
-
+            # VARIABLES GLOBALES
+            output = self.get_format_global (output, path)
             return output
 
         # Formateo del markdown exportado 
@@ -301,6 +270,13 @@ class WBlock ():
 
         # Formateo del markdown incrustado en el HTMA 
         return set_format_md(self.attributes["TEMPLATE"])
+
+    def get_format_other (self, path):
+        output = self.attributes["TEMPLATE"]
+        
+        # VARIABLES GLOBALES
+        output = self.get_format_global (output, path)
+        return output
         
     """
     Listar archivos del directorio
@@ -308,7 +284,7 @@ class WBlock ():
     -   Admite rutas relativas desde el punto en que se ejecuta el script. 
     - TODO: Algunos parámetros de order by, dependientes de una etiqueta ORDER_BY
     """    
-    def list_directory_files (self):
+    def list_directory_files (self, extension=""):
         output = []
         try:
             self.attributes["DIR"] 
@@ -316,9 +292,18 @@ class WBlock ():
             print ("\t Error: Directory label is missing in the block")
             quit()
 
-        for path in os.listdir(self.attributes["DIR"]):
+        limit=999999
+        if "REDIR_LIMIT" in self.attributes:
+            limit = int(self.attributes["REDIR_LIMIT"])
+
+        for path in os.listdir(self.attributes["DIR"])[:limit]:
             if os.path.isfile(os.path.join(self.attributes["DIR"], path)):
-                output.append(path) 
+                if extension:
+                    if path.split(".")[-1] in extension:
+                        output.append(path)
+                       
+                else:
+                    output.append(path)
         
         # Clasificar cadena según el orden
         if "ORDER_BY" in self.attributes:
@@ -352,17 +337,38 @@ class WBlock ():
     """
     Sustituye las etiquetas globales, que son comunes a todos los fomatos de archivo
     Algunas de estas pueden ser la fecha, la hora, el nombre del archivo...
+    TODO
+    -   MEDIA GRAVEDAD: que las etiquetas contengan un limite $HTMA_DESCRIPTION(25)$ de caracteres y que 
+    cuando se realice la operación de sustitución, se corte la frase. (esto se podria hacer con javascript, no es prioritario)
     """
 
-    def get_format_global (self, input):
-        output = input
+    def get_format_global (self, output, path=""):
 
+        if path:
+            # Fecha  de creación de cada archivo
+            creation_time = os.path.getctime(path)
+            creation_time = datetime.datetime.fromtimestamp(creation_time)
+            output = output.replace("$CREATION_TIME_FOR_EACH_FILE_IN_DIR$", creation_time.strftime('%Y-%m-%d'))
+
+            # Fecha  de última modificación de cada archivo
+            last_modification_time =  os.path.getmtime(path)
+            last_modification_time = datetime.datetime.fromtimestamp (last_modification_time)
+            output = output.replace("$LAST_MODIFICATION_TIME_FOR_EACH_FILE_IN_DIR$", last_modification_time.strftime('%Y-%m-%d'))
+
+            # Nombre del archivo
+            output = output.replace ("$FILE_NAME_FOR_EACH_FILE_IN_DIR$", os.path.basename(path)[:os.path.basename(path).rfind(".")])
+            
+            # Enlace para cada archivo.
+            if self.attributes["REDIR"] == "MD":
+                output = output.replace ("$LINK_FOR_EACH_FILE_IN_DIR$",target_path+os.sep+"target"+path[path.find(os.sep):].replace(".md",".html"))
+            elif  self.attributes["REDIR"] == "HTMA":
+                 output = output.replace ("$LINK_FOR_EACH_FILE_IN_DIR$",target_path+os.sep+"target"+path[path.find(os.sep):].replace(".htma",".html"))
+            else:
+                output = output.replace ("$LINK_FOR_EACH_FILE_IN_DIR$",target_path+os.sep+"target"+path[path.find(os.sep):])
+        
         # Hora en la ejecución del script.
         output = output.replace("$DATE_OF_TODAY$", str (datetime.date.today()))
-
-        # Nombre de la carpeta donde el script es ejecutado
-        # TODO
-
+        
         return output
 
     """
@@ -375,17 +381,23 @@ class WBlock ():
     def generate_code (self):
         output =""
         if self.attributes["REDIR"] =="HTMA":
-            for file in self.list_directory_files():
+            for file in self.list_directory_files(["htma", "html"]):
                 htm_file_path = self.attributes["DIR"]+os.sep+file
                 output = output + self.get_format_htm_ids(htm_file_path)
         elif self.attributes["REDIR"]=="MD":
-            for file in self.list_directory_files():
+            for file in self.list_directory_files(["md", "txt"]):
                 md_file_path = self.attributes["DIR"]+os.sep+file
                 output = output + self.get_format_md (md_file_path)
-
-
-        elif self.attributes["REDIR"]=="OTHER":
+        elif self.attributes["REDIR"]=="ALL":
             pass
+        else:
+            if "," in self.attributes["REDIR"]:
+                extensions = [extension.strip() for extension in self.attributes["REDIR"].split(",")]
+            else: 
+                extensions = self.attributes["REDIR"].strip()
+            for file in self.list_directory_files(extensions):
+                other_file_path = self.attributes["DIR"]+os.sep+file
+                output = output + self.get_format_other (other_file_path)
 
         output =  self.get_format_global (output)
 
@@ -417,7 +429,6 @@ class HTMAFile ():
     def file_to_blocks (self):
         output = []
         
-
         htm_blocks = (re.split("<HTMA|</HTMA>", self.htm))
         string_blocks = [block for block in htm_blocks if "!>" in block]
         string_blocks = [block.replace("!>","") for block in string_blocks]
@@ -477,6 +488,12 @@ class HTMAProject ():
                if file_extension == "htma": #or file_extension =="md":
                 with open (target_directory+os.sep+file_name+".html", "w") as file:
                     pass
+               elif (file_extension != "md" and file_extension !="template"):
+                shutil.copy (root+os.sep+file, target_directory+os.sep+file )
+       
+               
+
+        # Introducción de datos en los ficheros vacíos. 
                     
         for root, dirs, files in os.walk(self.path):
             target_directory = root.replace(self.path, self.target+'target')
@@ -489,13 +506,9 @@ class HTMAProject ():
                     print (root+os.sep+file_name+"."+file_extension)
                     htmafile = HTMAFile (root+os.sep+file_name+"."+file_extension)
                     file.write( htmafile.generate_html()) 
-                    
-                    # TODO
-                    # Este método deberá emplear HTMAFile para generar el código e introducirlo en cada uno de los ficheros HTML
-                    # Para eso será necesario pasarle por parámetro el contenido de "root"+"file" facilitado en este mismo for. 
             
 
-project = HTMAProject("web_prueba", target_path)
+project = HTMAProject(input_path, target_path)
 project.generate_target()
 
 
