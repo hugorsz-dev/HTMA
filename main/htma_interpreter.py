@@ -145,9 +145,14 @@ class WBlock ():
         output = output.replace ("$LINK_FOR_EACH_FILE_IN_DIR$", obtain_name_from_path(path).replace("htma", "html"))
         
         # Fecha  de creación de cada archivo
-        date_of_file_creation = os.path.getmtime(path)
-        date_of_file_creation = datetime.datetime.fromtimestamp(date_of_file_creation)
-        output = output.replace("$DATE_FOR_EACH_FILE_IN_DIR$", date_of_file_creation.strftime('%Y-%m-%d'))
+        creation_time = os.path.getctime(path)
+        creation_time = datetime.datetime.fromtimestamp(creation_time)
+        output = output.replace("$CREATION_TIME_FOR_EACH_FILE_IN_DIR$", creation_time.strftime('%Y-%m-%d'))
+
+        # Fecha  de última modificación de cada archivo
+        last_modification_time =  os.path.getmtime(path)
+        last_modification_time = datetime.datetime.fromtimestamp (last_modification_time)
+        output = output.replace("$LAST_MODIFICATION_TIME_FOR_EACH_FILE_IN_DIR$", last_modification_time.strftime('%Y-%m-%d'))
         
         return output
 
@@ -239,6 +244,7 @@ class WBlock ():
                 output ["MD_QUOTE"+"["+str(quote_counter)+"]"] = quote_counter_bufer
 
             # MARKDOWN TO HTML, etiqueta que contiene todo el documento
+            
             with open(path, "r",  encoding="utf-8") as file:
                 md = file.read()
             output["MARKDOWN_TO_HTML"] = markdown2.markdown(md, extras=["tables", "fenced-code-blocks"])
@@ -264,19 +270,28 @@ class WBlock ():
 
             array_labels= re.findall(r'<\w+>\s*\$.*?\$\s*</\w+>',output)
             for label in array_labels:
-                formatted_label = re.findall( r'<(\w+)>\s*\$(.*?)\$\s*</\1>', label)
-                bufer =""
-                for content in md_ids_done[formatted_label[0][1]]:
-                    bufer = bufer + f"<{formatted_label[0][0]}>{content}</{formatted_label[0][0]}>"
-                output = output.replace(label, bufer) 
-            
-            # Hora de creación de cada archivo
-            date_of_file_creation = os.path.getmtime(path)
-            date_of_file_creation = datetime.datetime.fromtimestamp(date_of_file_creation)
-            output = output.replace("$DATE_FOR_EACH_FILE_IN_DIR$", date_of_file_creation.strftime('%Y-%m-%d'))
+                try:
+                    formatted_label = re.findall( r'<(\w+)>\s*\$(.*?)\$\s*</\1>', label)
+                    bufer =""
+                    for content in md_ids_done[formatted_label[0][1]]:
+                        bufer = bufer + f"<{formatted_label[0][0]}>{content}</{formatted_label[0][0]}>"
+                    output = output.replace(label, bufer) 
+                except:
+                    pass # Las etiquetas que no son especiales de markdown pasarán por aquí
+
+            # Fecha  de creación de cada archivo
+            creation_time = os.path.getctime(path)
+            creation_time = datetime.datetime.fromtimestamp(creation_time)
+            output = output.replace("$CREATION_TIME_FOR_EACH_FILE_IN_DIR$", creation_time.strftime('%Y-%m-%d'))
+
+            # Fecha  de última modificación de cada archivo
+            last_modification_time =  os.path.getmtime(path)
+            last_modification_time = datetime.datetime.fromtimestamp (last_modification_time)
+            output = output.replace("$LAST_MODIFICATION_TIME_FOR_EACH_FILE_IN_DIR$", last_modification_time.strftime('%Y-%m-%d'))
             
             # Enlace para cada archivo.
             output = output.replace ("$LINK_FOR_EACH_FILE_IN_DIR$", obtain_name_from_path(path).replace("md", "html"))
+
 
             return output
 
