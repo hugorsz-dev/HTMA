@@ -196,14 +196,14 @@ class WBlock ():
                 elif "![" in line and "](" in line and not r"\!" in line:
                     img_counter = img_counter +1
                     find = re.findall(r'\(.*?\)', line)
-                    output ["MD_IMG"+"["+str(img_counter)+"]"] = find [0].replace ("(", "").replace(")","")
+                    output ["MD_IMG"+"["+str(img_counter)+"]"] = target_path+os.sep+"target" + os.sep + os.path.basename(self.attributes["DIR"])  + os.sep +  find [0].replace ("(", "").replace(")","")
 
                 # MD_URL
                 elif "[" in line and  "](" in line and not r"\[" in line:
                     url_counter = img_counter +1
                     find = re.findall(r'\(.*?\)', line)
-                    output ["MD_URL"+"["+str(url_counter)+"]"] = find [0].replace ("(", "").replace(")","")
-
+                    output ["MD_URL"+"["+str(url_counter)+"]"] =  target_path+os.sep+"target" + os.sep + os.path.basename(self.attributes["DIR"])  + os.sep +  find [0].replace ("(", "").replace(")","").replace(".md", ".html") # Componenda
+                
                 # MD_QUOTE
                 elif line [0:2] == "> " or line ==">":
 
