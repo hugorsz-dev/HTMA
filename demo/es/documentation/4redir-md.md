@@ -11,13 +11,13 @@ Por ejemplo, para `REDIR: MD`, el script tendrá acceso a la variable especial `
 
 ## Las variables especiales de `REDIR:MD`
 
-Anteriormente, también se ejemplificó un empleo sencillo de la etiqueta `<HTMA!>` junto con `REDIR: MD`, orientado a las redirecciones de archivos markdown.
+Anteriormente, también se ejemplificó un empleo sencillo de la etiqueta `<HTMA!>` junto con `REDIR: MD`, orientado a las redirecciones de archivos markdown. 
 
-Pues bien: **no se trataba un ejemplo sencillo**, sino que, en realidad, comprende toda la sintaxis que existe en `HTMA`, y sus posibilidades con respecto a las redirecciones de archivos markdown. Entenderlo implica tener presente la totalidad de las funciones que esta herramienta propone para presentar documentos markdown convertidos a formato HTML.
+**No se trataba un ejemplo sencillo**, sino que, en realidad, comprende toda la sintaxis que existe en `HTMA`, y sus posibilidades con respecto a las redirecciones de archivos markdown. Entenderlo implica tener presente la totalidad de las funciones que esta herramienta propone para presentar documentos markdown convertidos a formato HTML.
 
 Sobre este punto, solo será preciso aprender cuales son las *variables especiales* para este tipo de `REDIR`.
 
-### **`MARKDOWN_TO_HTML`**
+### `MARKDOWN_TO_HTML`
 
 Esta variable introducirá el archivo `.md` iterado, pero en formato HTML. La página previa presenta su sencillo funcionamiento,
 

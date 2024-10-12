@@ -16,7 +16,7 @@ python --version
 
 ## Dependencies
 
-All modules used by the HTMA script are standard, with the exception of the [markdown parser](https://github.com/trentm/python-markdown2/?tab=readme-ov-file). Installing them is as simple as running the following ``pip` command:
+All modules used by the HTMA script are standard, with the exception of the [markdown parser](https://github.com/trentm/python-markdown2/?tab=readme-ov-file). Installing them is as simple as running the following `pip` command:
 
 ```
 pip install markdown2

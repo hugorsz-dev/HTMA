@@ -11,12 +11,12 @@ In the `first_project` project, inside the `content` folder, we will create thre
 ```
 └── myweb/
     ├── content/
-    │ ├─── doc1.md
-    │ ├─── doc2.md
-    │ ├─── doc3.md
-    │ ├─── htmadoc1.htma
-    │ ├─── htmadoc2.htma
-    │ └─── htmadoc3.htma
+    │   ├── doc1.md
+    │   ├── doc2.md
+    │   ├── doc3.md
+    │   ├── htmadoc1.htma
+    │   ├── htmadoc2.htma
+    │   └── htmadoc3.htma
     └── index.htma
 ```
 
@@ -43,7 +43,7 @@ Within the `htma` files, we can insert some simple HTML document. And although i
 
 And in the `index.htma` file, you will need to add the following code snippet: 
 
-````html
+```html
 <HTMA!>
     DIR:: myweb/content;
     REDIR:: HTMA;

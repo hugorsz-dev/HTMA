@@ -11,15 +11,15 @@ In the `first_project`, inside the `content` folder, we will insert three images
 ```
 myweb/
 ├── content/
-│ ├─── doc1.md
-│ ├├── doc2.md
-│ ├─── doc3.md
-│ ├─── htmadoc1.htma
-│ ├─── htmadoc2.htma
-│ ├─── htmadoc3.htma
-│ ├─── img1.gif
-│ ├─── img2.jpg
-│ └└── img3.png
+│   ├── doc1.md
+│   ├── doc2.md
+│   ├── doc3.md
+│   ├── htmadoc1.htma
+│   ├── htmadoc2.htma
+│   ├── htmadoc3.htma
+│   ├── img1.gif
+│   ├── img2.jpg
+│   └── img3.png
 └── index.htma
 ```
 
@@ -33,7 +33,7 @@ And in the `index.htma` file, we will introduce a loop with a `REDIR` that colle
     REDIR::: png, jpg, gif;
     TEMPLATE:: {
         <h2> $FILE_NAME_FOR_EACH_FILE_FILE_IN_DIR$ </h2>
-        <img src=‘$LINK_FOR_EACH_FILE_IN_DIR$’>
+        <img src="$LINK_FOR_EACH_FILE_IN_DIR$’>
         <p> <em> $CREATION_TIME_FOR_EACH_FILE_IN_DIR$ </em> </p> </p>
     };
 </HTMA>
@@ -45,12 +45,12 @@ Executed the `htma.py` script, the result should look like this:
 
 ```
 <h2> img2 </h2>
-<img src=‘/home/user/first_project/target/content/img2.jpg’>
+<img src="/home/user/first_project/target/content/img2.jpg">
 <p> <em> 2024-10-12</em> </p> <p>
 <h2> img1 </h2>
-<img src=‘/home/user/first_project/target/content/img1.gif’>
+<img src="/home/user/first_project/target/content/img1.gif">
 <p> <em> 2024-10-12</em> </p> <p>
 <h2> img3 </h2>
-<img src=‘/home/user/first_project/target/content/img3.png’>
+<img src="/home/user/first_project/target/content/img3.png">
 <p> <em>2024-10-12</em> </p> </p>
 ``` 

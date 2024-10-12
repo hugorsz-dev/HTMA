@@ -111,18 +111,18 @@ The result will look something like the following:
 
 ```
 ├── myweb/
-│ ├─── content/
-│ │ │ ├─── doc1.md
-│ │ ├─── doc2.md
-│ │ └─── doc3.md
-│ └─── index.htma
-├─── target/
-│ ├─── content/
-│ │ │ ├─── doc1.html
-│ │ ├─── doc2.html
-│ │ └└── doc3.html
-│ └└── index.html
-└└─── htma.py*
+│   ├── content/
+│   │   ├── doc1.md
+│   │   ├── doc2.md
+│   │   └── doc3.md
+│   └── index.htma
+├── target/
+│   ├── content/
+│   │   ├── doc1.html
+│   │   ├── doc2.html
+│   │   └── doc3.html
+│   └── index.html
+└── htma.py*
 ``` 
 
 

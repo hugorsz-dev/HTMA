@@ -1,7 +1,7 @@
 
 # Markdown redirects
 
-## What is a `special variable`?
+## What is a *special variable*?
 
 As seen in [previous topic](3first_project.md), the `REDIR` field biases the reading of an extension: If it is `MD`, it will only read `.md` files from the directory pointed to by the `DIR` field.  
 
@@ -17,11 +17,11 @@ Well, **this was not a simple example**, but actually encompasses the entire syn
 
 On this point, it will only be necessary to learn what are the *special variables* for this type of `REDIR`.
 
-** **`MARKDOWN_TO_HTML`**.
+### **`MARKDOWN_TO_HTML`**.
 
 This variable will insert the iterated `.md` file, but in HTML format. The previous page introduces its simple operation,
 
-**`MD_H1...MD_H6`**
+### **`MD_H1...MD_H6`**
 
 The markdown headings are referenced using the `MD_Hn[i]` variable. 
 
