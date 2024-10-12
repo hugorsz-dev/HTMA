@@ -430,12 +430,6 @@ class WBlock ():
         output =  self.get_format_global (output)
 
         return output
-        
-#block = WBlock('     DIR: web_prueba; REDIR: HTMA; TEMPLATE: { <a href="$LINK_FOR_EACH_FILE_IN_DIR$"> <h3> $HTMA_TITLE$ </h3> <p> $HTMA_DESCRIPTION$ </p> </a> }')
-#block.get_format_htm_ids(input_path+"/articulos.htma")
-#print (block.attributes)
-#print (block.generate_code())
-
 class HTMAFile ():
         
     """
