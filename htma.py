@@ -1,16 +1,27 @@
 
-# "HTML Template to Markdown Automator"
-# HTMA
-# TODO: Para los enlaces relativos (a paginas internas) convertirlos en absolutos
+input_path ="demo" 
+target_path = "."
+
+# HTMA: HTML Template to Markdown Automator
+# v1.3
+
+## LICENSE
+
+"""
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
+"""
+
+# -----------------------------
 
 import os
 import shutil
 import re 
 import datetime
 import markdown2
-
-input_path ="demo" 
-target_path = "."
 
 # Corregir directorios
 
@@ -527,22 +538,14 @@ project = HTMAProject(input_path, target_path)
 project.generate_target()
 
 
-#file = HTMAFile ("web_prueba/index.htma")
-#for block in file.blocks:
-#    print (block.attributes) 
-#print (file.generate_html())
 """
-[HTMA=
-    DIR: .;
-    REDIR: HTMA; # iteración con todos los ficheros .htma
-    TEMPLATE: {
-        <a href="$FOR_EACH_FILE_IN_DIR$"> # para cada fichero htma
-            <h3> $HTMLA_TITLE$ </h3> # mostrar sus etiquetas con la id $HTMLA_TITLE$ 
-            <p>$DIR_DESCRIPTION$</p>
-            <p>$DIR_NAME$</p> 
-        </a>
-    };
--END]
-
-
+  \ 
+   \ 
+- - - - - 
+     \  
+      \ 
+       \ 
+        \ 
+SOLI DEO GLORIA 
 """
+
