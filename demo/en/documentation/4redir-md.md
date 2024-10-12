@@ -1,7 +1,7 @@
 
 # Markdown redirects
 
-## What is a ‘special variable’?
+## What is a `special variable`?
 
 As seen in [previous topic](3first_project.md), the `REDIR` field biases the reading of an extension: If it is `MD`, it will only read `.md` files from the directory pointed to by the `DIR` field.  
 

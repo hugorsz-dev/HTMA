@@ -9,9 +9,9 @@
 There are very commendable options on the software market that do the same job as HTMA, and because they are more popular - and better - they receive ongoing maintenance that this project lacks due to its personal nature. Some of these alternatives include:
 
 - [Jekyll](https://jekyllrb.com/)
-- Hugo](https://gohugo.io/) 
-- Next.js](https://nextjs.org/)
-- Astro](https://astro.build/)
+- [Hugo](https://gohugo.io/) 
+- [Next.js](https://nextjs.org/)
+- [Astro](https://astro.build/)
 
 While the problem with the above-linked programs is their **complexity**. They all have a long list of overwhelming features, a virtue turned flaw, which tends to make it difficult for novice users to create templates. 
 

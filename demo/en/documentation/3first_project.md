@@ -34,8 +34,8 @@ It is recommended that you enter absolute paths in both variables. If you enter 
 The variables should be: 
 
 ```
-input_path = ‘/home/user/first_project/myweb’.
-target_path = ‘/home/user/first_project/’
+input_path = `/home/user/first_project/myweb`.
+target_path = `/home/user/first_project/`
 ```
 
 > Don't use the same path for `input_path` and `target_path`. 
@@ -85,7 +85,7 @@ In the root of your project, create an `index.htma` file, in which you will ente
             DIR:: content;
             REDIR::: MD;
             TEMPLATE:: {
-                <li> <a href=‘$LINK_FOR_FOR_EACH_FILE_IN_DIR$’> $MD_H1[0]$</a> 
+                <li> <a href=`$LINK_FOR_FOR_EACH_FILE_IN_DIR$`> $MD_H1[0]$</a> 
             };
             MD_TEMPLATE {
                 <html>
@@ -154,7 +154,7 @@ Executed the `htma.py` script, the result should look like this:
 
   <p>This is how you write <em>italic text</em>.
     This is how you write <strong>bold text</strong>.
-    This is how you write <a href=‘https://google.com’>a link</a>.
+    This is how you write <a href=`https://google.com`>a link</a>.
     This is how you write <code>code</code>.
 
   <pre><code>This is a block of code

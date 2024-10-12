@@ -31,10 +31,10 @@ Within the `htma` files, we can insert some simple HTML document. And although i
    </head>
    <body>
       <header>
-         <h2 id=‘title’> This is the first sample HTMA document </h1>.
-         <p id=‘description’> This is a description <p>
-         <img id=‘image’ src=‘https://upload.wikimedia.org/wikipedia/commons/0/0e/Urgub_-_Texier_Charles_F%C3%A9lix_Marie_-_1882.jpg’> 
-         <a id=‘url’ href=‘http://google.es’> Link </a>
+         <h2 id=`title`> This is the first sample HTMA document </h1>.
+         <p id=`description`> This is a description <p>
+         <img id=`image` src=`https://upload.wikimedia.org/wikipedia/commons/0/0e/Urgub_-_Texier_Charles_F%C3%A9lix_Marie_-_1882.jpg`> 
+         <a id=`url` href=`http://google.es`> Link </a>
       </header>
 </html>
 ```
@@ -48,9 +48,9 @@ And in the `index.htma` file, you will need to add the following code snippet:
     DIR:: myweb/content;
     REDIR:: HTMA;
     TEMPLATE:: {
-        <a href=‘$url$’> Link </a>
-        <img src=‘$image$’>
-        <li> <a href=‘$LINK_FOR_FOR_EACH_FILE_IN_DIR$’> $title$ </a> 
+        <a href=`$url$`> Link </a>
+        <img src=`$image$`>
+        <li> <a href=`$LINK_FOR_FOR_EACH_FILE_IN_DIR$`> $title$ </a> 
         <p> $description$ </p>
     };
 </HTMA>
@@ -77,28 +77,28 @@ Executed the `htma.py` script, the result should look like this:
     </header>
     <body>
         <p>This are the markdown documents in the <code> content </code> directory:</p>
-        <li><a href=‘/home/user/first_project/target/content/doc1.html’> Page Title</a></li>
-        <li><a href=‘/home/user/first_project/target/content/doc2.html’> Page Title</a></li>
+        <li><a href=`/home/user/first_project/target/content/doc1.html`> Page Title</a></li>
+        <li><a href=`/home/user/first_project/target/content/doc2.html`> Page Title</a></li>
         <li>
-            <a href=‘/home/user/first_project/target/content/doc3.html’> Page Title</a>
+            <a href=`/home/user/first_project/target/content/doc3.html`> Page Title</a>
             <p>This are the HTMA documents in the <code> content </code> directory:</p>
-            <a href=‘Link’> Link </a> <img src=‘https://upload.wikimedia.org/wikipedia/commons/0/0e/Urgub_-_Texier_Charles_F%C3%A9lix_Marie_-_1882.jpg’ />
+            <a href=`Link`> Link </a> <img src=`https://upload.wikimedia.org/wikipedia/commons/0/0e/Urgub_-_Texier_Charles_F%C3%A9lix_Marie_-_1882.jpg` />
         </li>
 
         <li>
-            <a href=‘/home/user/first_project/target/content/htmadoc1.html’> This is the first sample HTMA document </a>
+            <a href=`/home/user/first_project/target/content/htmadoc1.html`> This is the first sample HTMA document </a>
             <p>This is a description</p>
-            <a href=‘Link’> Link </a> <img src=‘https://upload.wikimedia.org/wikipedia/commons/0/0e/Urgub_-_Texier_Charles_F%C3%A9lix_Marie_-_1882.jpg’ />
+            <a href=`Link`> Link </a> <img src=`https://upload.wikimedia.org/wikipedia/commons/0/0e/Urgub_-_Texier_Charles_F%C3%A9lix_Marie_-_1882.jpg` />
         </li>
 
         <li>
-            <a href=‘/home/user/first_project/target/content/htmadoc2.html’> This is the second sample HTMA document </a>
+            <a href=`/home/user/first_project/target/content/htmadoc2.html`> This is the second sample HTMA document </a>
             <p>This is a description</p>
-            <a href=‘Link’> Link </a> <img src=‘https://upload.wikimedia.org/wikipedia/commons/0/0e/Urgub_-_Texier_Charles_F%C3%A9lix_Marie_-_1882.jpg’ />
+            <a href=`Link`> Link </a> <img src=`https://upload.wikimedia.org/wikipedia/commons/0/0e/Urgub_-_Texier_Charles_F%C3%A9lix_Marie_-_1882.jpg` />
         </li>
 
         <li>
-            <a href=‘/home/user/first_project/target/content/htmadoc3.html’> This is the third sample HTMA document </a>
+            <a href=`/home/user/first_project/target/content/htmadoc3.html`> This is the third sample HTMA document </a>
             <p>This is a description</p>
         </li>
     </body>
