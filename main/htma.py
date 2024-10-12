@@ -9,11 +9,13 @@ import re
 import datetime
 import markdown2
 
-input_path ="/home/hugo/eclipse-workspace/programacionPyton/autoweb/demo"
-target_path = "/home/hugo/eclipse-workspace/programacionPyton/autoweb"
+input_path ="demo" 
+target_path = "."
 
 # Corregir directorios
 
+input_path = os.path.abspath (input_path)
+target_path = os.path.abspath (target_path)
 if input_path[-1]==os.sep: input_path= input_path[:-1]
 if target_path[-1]==os.sep: target_path= target_path[:-1]
 
@@ -125,7 +127,10 @@ class WBlock ():
                     htma_id = matches[0]
                     if 'src="' in htm[i] or "src='" in (htm[i]):
                         matches = re.findall(r'src=("[^"]+"|\'[^\']+\')', htm[i])
-                        output[htma_id.replace("'", "").replace('"', "")] = matches[0].replace("'", "").replace('"', "")
+                        if "://" in matches[0].replace("'", "").replace('"', ""):
+                            output[htma_id.replace("'", "").replace('"', "")] = matches[0].replace("'", "").replace('"', "")
+                        else:
+                            output[htma_id.replace("'", "").replace('"', "")] = target_path+os.sep+"target" + os.sep +  os.path.basename(self.attributes["DIR"])  + os.sep + matches[0].replace("'", "").replace('"', "")
                     else:
                         output[htma_id.replace("'", "").replace('"', "")] =  htm[i+1].split("<")[0].strip()
             return output
@@ -238,8 +243,6 @@ class WBlock ():
 
             output["MARKDOWN_TO_HTML"] = markdown2.markdown(md, extras=["tables", "fenced-code-blocks"])
 
-            # TODO: Recorrer los valores del diccionario ["MARKDOWN_TO_HTML"] y pasarles el markdown2, para que las variables estén formateadas en markdown
-
             return output   
 
         """
@@ -249,10 +252,10 @@ class WBlock ():
         def set_format_md (template):
             output = template
             md_ids_done=md_ids(path)
-
+            
             for label in md_ids_done:
                 if isinstance(md_ids_done[label], str):
-                    output = output.replace("$"+label+"$", md_ids_done[label]) 
+                    output = output.replace("$"+label+"$", markdown2.markdown(md_ids_done[label], extras=["break-on-newline"]).replace("<p>", "").replace ("</p>", "")) 
 
             # - Los componentes del output que estén dispuestos en un array deben iterarse en etiquetas, p.ej: 
             # "MD_H1:["titulo 1", "titulo 2"
@@ -266,7 +269,7 @@ class WBlock ():
                     bufer =""
                     for content in md_ids_done[formatted_label[0][1]]:
                         bufer = bufer + f"<{formatted_label[0][0]}>{content}</{formatted_label[0][0]}>"
-                    output = output.replace(label, bufer) 
+                    output = output.replace(label, markdown2.markdown(bufer, extras=["break-on-newline"]).replace("<p>", "").replace ("</p>", ""))  
                 except:
                     pass # Las etiquetas que no son especiales de markdown pasarán por aquí
 
@@ -504,12 +507,10 @@ class HTMAProject ():
                     pass
                elif (file_extension != "md" and file_extension !="template"):
                 shutil.copy (root+os.sep+file, target_directory+os.sep+file )
-       
-               
-
+                
         # Introducción de datos en los ficheros vacíos. 
                     
-        for root, dirs, files in os.walk(self.path):
+        for root, dirs, files in os.walk(self.path, topdown=False):
             target_directory = root.replace(self.path, self.target+'target')
 
             for file in files:
