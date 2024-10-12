@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/a/a6/Folder-remote_Gion.svg">
+    <title>$MD_H1[0]$</title>
+    <style>
+        .horizontal-container {
+            text-align: center; /* Centra horizontalmente */
+        }
+        .logo {
+            width: 100px;
+        }
+        .title, .subtitle {
+            width: 100%;
+            text-align: center;
+        }
+
+        .title {
+            font-size: 20px;
+        }
+
+        .markdown {
+            margin-left: 100px;
+            margin-right: 100px
+        }
+
+        .markdown pre {
+            margin-left: 30px;
+            background-color: lightgray;
+        }
+
+        .markdown code {
+            padding: 3px
+        }
+
+        .markdown blockquote {
+            background-color: #D7E5E8;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+
+    </style>
+</head>
+
+<body>
+
+<header>
+<hr>
+
+<div class="horizontal-container">
+    <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/a/a6/Folder-remote_Gion.svg"/>
+</div>
+
+<h1 class="title"> HTMA: "HTML Template and Markdown Automator" </h1>
+
+<p class="subtitle"> <em> Extension of the HTML language to facilitate file iteration and markdown integration on the web.</em> </p>
+
+<hr>
+
+</header>
+
+<main>
+
+<a href="../index.html"> Volver al inicio </a>
+<div class="markdown">
+    $MARKDOWN_TO_HTML$
+</div>
+</main> 
+
+
+
+    
+</body>
+</html>

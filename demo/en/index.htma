@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTMA Documentation</title>
+     <style>
+        .horizontal-container {
+            text-align: center; /* Centra horizontalmente */
+        }
+        .logo {
+            width: 100px;
+        }
+        .title, .subtitle {
+            width: 100%;
+            text-align: center;
+        }
+
+        .title {
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+<hr>
+<div class="horizontal-container">
+    <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/a/a6/Folder-remote_Gion.svg"/>
+</div>
+
+<h1 class="title"> HTMA: "HTML Template and Markdown Automator" </h1>
+
+<p class="subtitle"> <em> Extension of the HTML language to facilitate file iteration and markdown integration on the web. </em> </p>
+
+<hr>
+
+</header>
+
+<ol>
+<HTMA!>
+    DIR:: demo/en/documentation;
+    REDIR:: MD; 
+    MD_TEMPLATE:: demo/en/md.htma.template;
+    ORDER_BY:: ALPHABETICAL;
+    TEMPLATE:: {
+            <li> <a href="$LINK_FOR_EACH_FILE_IN_DIR$"> $MD_H1[0]$</a> 
+            <ul> 
+                <li> $MD_H2$ </li>
+            </ul>
+    };
+
+</HTMA>
+
+</ol>
+
+
+    
+</body>
+</html>
