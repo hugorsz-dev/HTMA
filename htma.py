@@ -289,7 +289,7 @@ class WBlock ():
             return output
 
         # Formateo del markdown exportado 
-        with open (target_path+os.sep+"target"+path[path.find(os.sep):].replace(".md", ".html"), "w") as file:
+        with open (target_path+os.sep+"target"+path[path.find(os.sep):].replace(".md", ".html"), "w", encoding="utf-8") as file:
             file.write(set_format_md(self.attributes["MD_TEMPLATE"]))
 
         # Formateo del markdown incrustado en el HTMA 
@@ -530,16 +530,4 @@ class HTMAProject ():
 
 project = HTMAProject(input_path, target_path)
 project.generate_target()
-
-
-"""
-  \ 
-   \ 
-- - - - - 
-     \  
-      \ 
-       \ 
-        \ 
-SOLI DEO GLORIA 
-"""
 
