@@ -266,7 +266,7 @@ class WBlock ():
             
             for label in md_ids_done:
                 if isinstance(md_ids_done[label], str):
-                    output = output.replace("$"+label+"$", markdown2.markdown(md_ids_done[label], extras=["break-on-newline"]).replace("<p>", "").replace ("</p>", "")) 
+                    output = output.replace("$"+label+"$", markdown2.markdown(md_ids_done[label], extras=["break-on-newline"])) 
 
             # - Los componentes del output que estén dispuestos en un array deben iterarse en etiquetas, p.ej: 
             # "MD_H1:["titulo 1", "titulo 2"
@@ -280,7 +280,7 @@ class WBlock ():
                     bufer =""
                     for content in md_ids_done[formatted_label[0][1]]:
                         bufer = bufer + f"<{formatted_label[0][0]}>{content}</{formatted_label[0][0]}>"
-                    output = output.replace(label, markdown2.markdown(bufer, extras=["break-on-newline"]).replace("<p>", "").replace ("</p>", ""))  
+                    output = output.replace(label, markdown2.markdown(bufer, extras=["break-on-newline"]))  
                 except:
                     pass # Las etiquetas que no son especiales de markdown pasarán por aquí
 
