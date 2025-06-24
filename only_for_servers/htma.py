@@ -421,7 +421,7 @@ class WBlock ():
                 htm_file_path = self.attributes["DIR"]+os.sep+file
                 output = output + self.get_format_htm_ids(htm_file_path)
         elif self.attributes["REDIR"]=="MD":
-            for file in self.list_directory_files(["md", "txt"]):
+            for file in self.list_directory_files(["md", "txt"]): # Por si acaso se quisiera modificar el comportamiento de MD_TEMPLATE para recoger HTML en vez de MD
                 md_file_path = self.attributes["DIR"]+os.sep+file
                 output = output + self.get_format_md (md_file_path)
         elif self.attributes["REDIR"]=="ALL":
