@@ -82,11 +82,11 @@ En la raíz de tu proyecto, crea un archivo `index.htma`, en el que introducirá
         <p> This are the markdown documents in the <code> content </code> directory: </p> 
 
         <HTMA!>
-            DIR:: content;
-            REDIR:: MD;
+            DIR:: content;;
+            REDIR:: MD;;
             TEMPLATE:: {
                 <li> <a href="$LINK_FOR_EACH_FILE_IN_DIR$"> $MD_H1[0]$</a> 
-            };
+            };;
             MD_TEMPLATE {
                 <html>
                     <header>

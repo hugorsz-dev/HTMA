@@ -12,15 +12,15 @@ En este ejemplo, los archivos de imagen del anterior apartado se organizarán en
 
 ```
 <HTMA!>
-    DIR:: myweb/content;
-    REDIR:: png, jpg, gif;
+    DIR:: myweb/content;;
+    REDIR:: png, jpg, gif;;
     ORDER_BY:: DATE
     REDIR_LIMIT::2
     TEMPLATE:: {
         <h2> $FILE_NAME_FOR_EACH_FILE_IN_DIR$ </h2>
         <img src="$LINK_FOR_EACH_FILE_IN_DIR$">
         <p> <em> $CREATION_TIME_FOR_EACH_FILE_IN_DIR$ </em> </p>
-    };
+    };;
 </HTMA>
 ```
 

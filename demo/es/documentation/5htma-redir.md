@@ -45,14 +45,14 @@ Y en el fichero `index.htma`, será necesario añadir el siguiente fragmento de 
 
 ```html
 <HTMA!>
-    DIR:: myweb/content;
-    REDIR:: HTMA;
+    DIR:: myweb/content;;
+    REDIR:: HTMA;;
     TEMPLATE:: {
         <a href="$url$"> Link </a>
         <img src="$image$">
         <li> <a href="$LINK_FOR_EACH_FILE_IN_DIR$"> $title$  </a> 
         <p> $description$ </p>
-    };
+    };;
 </HTMA>
 ```
 ## Explicación del archivo `index.htma`

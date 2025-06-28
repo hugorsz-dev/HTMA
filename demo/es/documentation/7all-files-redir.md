@@ -29,13 +29,13 @@ Y en el fichero `index.htma`, introduciremos un bucle con un `REDIR` que recoja 
 
 ```
 <HTMA!>
-    DIR:: myweb/content;
-    REDIR:: png, jpg, gif;
+    DIR:: myweb/content;;
+    REDIR:: png, jpg, gif;;
     TEMPLATE:: {
         <h2> $FILE_NAME_FOR_EACH_FILE_IN_DIR$ </h2>
         <img src="$LINK_FOR_EACH_FILE_IN_DIR$">
         <p> <em> $CREATION_TIME_FOR_EACH_FILE_IN_DIR$ </em> </p>
-    };
+    };;
 </HTMA>
 ```
 

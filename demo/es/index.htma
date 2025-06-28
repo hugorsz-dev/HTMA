@@ -41,21 +41,59 @@
 
 <ol>
 <HTMA!>
-    DIR:: demo/es/documentation;
-    REDIR:: MD; 
-    MD_TEMPLATE:: demo/es/md.htma.template;
-    ORDER_BY:: ALPHABETICAL;
+    DIR:: demo/es/documentation;;
+    REDIR:: MD;;
+    MD_TEMPLATE:: demo/es/md.htma.template;;
+    ORDER_BY:: ALPHABETICAL;;
     TEMPLATE:: {
             <li> <a href="$LINK_FOR_EACH_FILE_IN_DIR$"> $MD_H1[0]$</a> 
             <ul> 
                 <li> $MD_H2$ </li>
             </ul>
-    };
+    };;
 
 </HTMA>
 
 </ol>
 
+<HTMA!>
+        REDIR::ONLY_MD;;
+        ONLY_MD:: {
+            # acerca-de
+
+            ## Declaración de fe
+
+            Creo que Jesucristo es el Hijo de Dios: solo él es Señor y Salvador. De él y para él confieso, y asimismo ante el mundo, que es Dios en la tierra, Emmanuel, el Cristo profetizado al pueblo de Israel cuyo anuncio redundó en el Antiguo Testamento y aún redunda en el Nuevo, a su próxima venida. El único Dios es en Trinidad y hállase en Dios el Padre, Dios el Hijo, y Dios el Espíritu Santo. Mi credo entero está sujeto a las Sagradas Escrituras, ellas son la verdad, inerrantes, palabra de Dios inspirada por medio del Espíritu Santo. En ellas digo, pues está escrito: Jesús de Nazaret, es el Hijo de Dios, el Señor y Dios eterno, subsistente y mayor que todas las criaturas, incluidas los ángeles; siendo él el creador de todas las cosas, quiso derramar su sangre por los injustos, siendo él sin mácula, a fin de que todos los hombres fueran salvos, no por la medida de sus obras, sino por la única medida de su obra; reconozco el carácter enteramente redentor de su sacrificio, recibido solamente por la fe, y principiado en todos los cristianos por la gracia de la predestinación.
+
+            Por demás, mi credo se atiene a la [Confesión de Londres de 1689](https://www.chapellibrary.org/pdf/books/lbcos.pdf).
+
+            El Señor reclama de nosotros el estudio de su Palabra, así como enseñó David, que "Bienaventurado el varón [...] que en la ley de Jehová está su delicia, y en su ley medita de día y de noche". Presente portal no es más que la aplicación de este precepto a mi persona, una dádiva que quiero ofrecer a quienes tienen la oportunidad de visitar esta página. No exento, sin embargo, de errores, pido a quienes tengan a bien el leerme: hacedlo lo mas crítica y minuciosamente posible, considerando ante todo al autor como lo que es, un alumno inexperto. Insto a admirar el ejemplo de los bereanos, que aun ante San Pablo, no daban pábulo a su palabra sin antes implicarse, "escudriñando cada día las Escrituras para ver si estas cosas eran así".
+
+            ## Derechos
+
+            ### Sobre los documentos publicados
+
+            Los documentos adjuntos en las secciones de comentarios de texto, comparativas y concordancias, esbozos, reflexiones, estudios y cartas han sido editados íntegramente por mí, y su contenido textual perteneciente a mi autoría no está sujeto a ningún derecho, remitido por lo tanto a favor del dominio público de acuerdo a los términos de declarados en la licencia [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/deed.es) de Creative Commons.
+
+            Los subdirectorios contenidos en la sección de universidad pueden contener documentos cuyos derechos de autor pertenecen a los mentados dentro de sus respectivos créditos, o en su defecto, a la [Universidad Eclesiástica San Dámaso](https://www.sandamaso.es/).
+
+            ### Sobre las citas bíblicas
+
+            Algunas de las citas bíblicas contenidas en los documentos son extraidas de la versión Reina Valera 1960. Pese a tratarse una revisión fidedigna, me veo en la desgraciada tesitura de comunicar que esta cuenta con derechos de copyright, cuya declaración estoy obligado a introducir:
+
+            > Texto bíblico: Reina-Valera 1960 ™ © Sociedades Bíblicas en América Latina, 1960. Derechos renovados 1988, Sociedades Bíblicas Unidas. Utilizado con permiso.
+
+            Es por este hecho que las citas de los documentos más recientes recurren a la versión de dominio público más reciente de la Biblia Reina Valera, la [revisión de 1909](https://es.wikisource.org/wiki/Biblia_Reina-Valera_1909).
+
+            ## Contacto
+
+            Mi dirección de correo electrónico es [hugoruizschz@gmail.com](mailto:hugoruizschz@gmail.com), pueden contactarme por ese medio para remitirme cualquier información, cuestión u observación.
+
+        };;
+        MD_TEMPLATE:: {
+            $MARKDOWN_TO_HTML$
+        };;
+    </HTMA>
 
     
 </body>

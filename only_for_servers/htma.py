@@ -1,8 +1,7 @@
+ip = "https://127.0.0.1/" # format: http://ip/
+webname="public"
 
-ip = "http://127.0.0.1:5500/" # format: http://ip/
-webname="demo-page"
-
-input_path ="demo" 
+input_path ="input" 
 target_path = "html"
 
 """
@@ -10,7 +9,7 @@ In linux-like servers, htma.py must be into the /var/www/ folder, and the target
 """
 
 # HTMA: HTML Template to Markdown Automator
-# v1.3
+# v1.4.0
 
 ## LICENSE
 
@@ -39,6 +38,27 @@ if target_path[-1]==os.sep: target_path= target_path[:-1]
 
 #
 attributes_separator ="::"
+attrubutes_delimiter =";;"
+# 
+
+def fix_markdown_indentation(text):
+
+    # Dividir en líneas
+    lines = text.split('\n')
+    fixed_lines = []
+    
+    for line in lines:
+        # Eliminar espacios al principio y final de cada línea
+        stripped = line.strip()
+        
+        # Si la línea está vacía, mantenerla vacía
+        if not stripped: # cadena vacía es = falso
+            fixed_lines.append('')
+        else:
+            fixed_lines.append(stripped)
+    
+    # Unir las líneas
+    return '\n'.join(fixed_lines)
 
 """
 El objetivo de la clase wblock es devolver los bloques HTMA correctamente TEMPLATEeados en TEMPLATEo
@@ -60,53 +80,54 @@ class WBlock ():
     -   Convierte el bloque a un diccionario de python (clave, valor).
     """
         
-    def block_string_to_attributes (self,block): 
-
-        attributes = {}   
-
-        block = block.split (";")
-
-        clean_block ="" 
+    def block_string_to_attributes(self, block):
+        attributes = {}
+        block = block.split(attrubutes_delimiter)
+        clean_block = ""
+        for trace in block:
+            try:
+                if "{" in trace:
+                    trace = trace.split("{")[0].replace(" ", "") + trace.split("{")[1].strip().replace("}", " ").strip()
+                else:
+                    trace = trace.split(attributes_separator)[0].replace(" ", "") + attributes_separator + trace.split(attributes_separator)[1].strip()
+            except:
+                pass  # Omitir registros basura
+            clean_block = clean_block + trace + attrubutes_delimiter
+        
+        block = clean_block.split(attrubutes_delimiter)
+        block = [trace for trace in block if trace.strip()]
         
         for trace in block:
-            try: 
-                if "{" in trace: 
-                    trace = trace.split("{")[0].replace(" ", "")+ trace.split("{")[1].strip().replace("}", " ").strip() 
-                else: 
-                    trace = trace.split(attributes_separator)[0].replace(" ", "")+attributes_separator+ trace.split(attributes_separator)[1].strip()
-            except:
-                pass # Omitir registros basura
-                
-            clean_block = clean_block + trace +";"
-
-                
-        block = clean_block.split(";") 
-        block =  [trace for trace in block if trace.strip()]
-
-        for trace in block: 
             try:
-                key = trace.split (attributes_separator)[0]
-                value= trace.split (attributes_separator)[1]
-                attributes[key]=value; 
-            except: 
-                raise Exception ("Formatting error at attribute at:", key, value)
-
-        # ATRIBUTOS GLOBALES 
-        try: 
-            if "<" not in attributes ["MD_TEMPLATE"]:
-                with open(attributes ["MD_TEMPLATE"], "r",  encoding="utf-8") as file:
-                    attributes ["MD_TEMPLATE"] = file.read().replace("\n","").replace("\t","")
+                key = trace.split(attributes_separator)[0].replace("\n", "")
+                value = trace.split(attributes_separator)[1]
+                attributes[key] = value
+            except:
+                raise Exception("Formatting error at attribute at:", key, value)
+        
+        # ATRIBUTOS GLOBALES
+        try:
+            if "<" not in attributes["MD_TEMPLATE"]:
+                with open(attributes["MD_TEMPLATE"], "r", encoding="utf-8") as file:
+                    attributes["MD_TEMPLATE"] = file.read().replace("\n", "").replace("\t", "")
         except:
             pass
-        try: 
-            if "<" not in attributes ["TEMPLATE"]:
-                with open(attributes ["TEMPLATE"], "r",  encoding="utf-8") as file:
-                    attributes ["TEMPLATE"] = file.read().replace("\n","").replace("\t","")
+        
+        try:
+            if "<" not in attributes["TEMPLATE"]:
+                with open(attributes["TEMPLATE"], "r", encoding="utf-8") as file:
+                    attributes["TEMPLATE"] = file.read().replace("\n", "").replace("\t", "")
         except:
             pass
-
-            
-        return attributes; 
+        
+        try:
+            if os.path.exists(attributes["ONLY_MD"]):
+                with open(attributes["ONLY_MD"], "r", encoding="utf-8") as file:
+                    attributes["ONLY_MD"] = file.read()
+        except:
+            pass
+        
+        return attributes
 
     """
     RETORNA EL CÓDIGO GENERADO de un bloque con REDIR HTMA 
@@ -165,142 +186,156 @@ class WBlock ():
         
         return output
 
+    """
+    Atributos markdown
+    -   Retorna un diccionario (clave, valor) con cada una de los valores markdown 
+    """
+
+    def md_ids (self,md):  
+        output = {}
+
+        md_list = md.split ("\n")
+
+        # MD_H1...H6(memoria)
+        h_counter = [-1] * 7 
+
+        # MD_IMG... (memoria)
+        img_counter = -1
+
+        # MD_URL --- (memoria)
+        url_counter = -1
+
+        #MD_QUOTE ... (memoria)
+        quote_counter = -1 
+        quote_counter_bufer = []
+
+        #MD_TEXT 
+        text_counter = -1
+
+        #
+        line_counter = -1
+        bufer_line_counter = 0 
+        
+        # Asignación de variables
+        for line in md_list:
+            line_counter = line_counter +1
+            line = line.strip ()
+            
+            # MD_HEADERS       
+            if line [0:1] == "#":
+                # Calcula el primer caracter que no es un "#" en la cadena, consecuentemente arrojando en el "index" su valor (1,6)
+                match = (re.search(r'[^#]', line))
+                index = match.start()
+                h_counter[index] = h_counter[index]+1
+                output["MD_H"+str(index)+"["+str(h_counter[index])+"]"] = line.replace ("#", "").strip()
+                # Array con todos los headers en su interior
+                try: 
+                    output["MD_H"+str(index)].append (line.replace ("#", "").strip())
+                except:
+                    output["MD_H"+str(index)] = []
+                    output["MD_H"+str(index)].append (line.replace ("#", "").strip())
+            # MD_IMG
+            elif "![" in line and "](" in line and not r"\!" in line:
+                img_counter = img_counter +1
+                find = re.findall(r'\(.*?\)', line)
+                output ["MD_IMG"+"["+str(img_counter)+"]"] = ip+webname + os.sep + os.path.basename(self.attributes["DIR"])  + os.sep +  find [0].replace ("(", "").replace(")","")
+
+            # MD_URL
+            elif "[" in line and  "](" in line and not r"\[" in line:
+                url_counter = img_counter +1
+                find = re.findall(r'\(.*?\)', line)
+                output ["MD_URL"+"["+str(url_counter)+"]"] =  ip+webname + os.sep + os.path.basename(self.attributes["DIR"])  + os.sep +  find [0].replace ("(", "").replace(")","").replace(".md", ".html") # Componenda
+            
+            # MD_QUOTE
+            elif line [0:2] == "> " or line ==">":
+
+                if (bufer_line_counter+1) == line_counter or bufer_line_counter==0:
+                    quote_counter_bufer.append (line.replace(">", "").strip()) 
+                else:
+                    # Agregar la línea anterior
+                    quote_counter = quote_counter+1 
+                    output ["MD_QUOTE"+"["+str(quote_counter)+"]"] = quote_counter_bufer
+                    quote_counter_bufer =[] 
+                    
+                    # Agregar la línea actual 
+                    quote_counter_bufer.append (line.replace(">","").strip())
+                
+                bufer_line_counter = line_counter
+            # MD_TEXT
+            else:
+                if line.strip()!="":
+                    text_counter = text_counter +1
+                    output ["MD_TEXT"+"["+str(text_counter)+"]"] = line
+
+        # MD_QUOTE Agregar última linea del bufer
+        if quote_counter_bufer != []:
+            output ["MD_QUOTE"+"["+str(quote_counter)+"]"] = quote_counter_bufer
+
+        # MARKDOWN TO HTML, etiqueta que contiene todo el documento
+        
+        # TODO: Componenda: sustituir .md por .html para las redirecciones
+        md = md.replace(".md)", ".html)")
+
+        output["MARKDOWN_TO_HTML"] = markdown2.markdown(md, extras=["tables", "fenced-code-blocks"])
+
+        return output   
+
+    """
+    Sustituye las variables de un string (template) por las variables de md_ids
+    """
+
+    def set_format_md (self,template, md):
+        
+        
+        output = template
+        
+        md_ids_done=self.md_ids(md)
+        
+        for label in md_ids_done:
+            if isinstance(md_ids_done[label], str):
+                output = output.replace("$"+label+"$", markdown2.markdown(md_ids_done[label], extras=["break-on-newline"])) 
+
+        # - Los componentes del output que estén dispuestos en un array deben iterarse en etiquetas, p.ej: 
+        # "MD_H1:["titulo 1", "titulo 2"
+        # Si el usuario escribe: <ul> <li> $MD_H1 </li> </ul> el resultado sería:   
+        # <ul> <li> "titulo 1" </li> <li> "titulo 2" </li> </ul> 
+
+        array_labels= re.findall(r'<\w+>\s*\$.*?\$\s*</\w+>',output)
+        for label in array_labels:
+            try:
+                formatted_label = re.findall( r'<(\w+)>\s*\$(.*?)\$\s*</\1>', label)
+                bufer =""   
+                for content in md_ids_done[formatted_label[0][1]]:
+                    bufer = bufer + f"<{formatted_label[0][0]}>{content}</{formatted_label[0][0]}>"
+                output = output.replace(label, markdown2.markdown(bufer, extras=["break-on-newline"]))  
+            except:
+                pass # Las etiquetas que no son especiales de markdown pasarán por aquí
+        
+        return output
+    
+    
     def get_format_md (self, path): 
 
-        """
-        Atributos markdown
-        -   Retorna un diccionario (clave, valor) con cada una de los valores markdown 
-        """
-
-        def md_ids (path):  
-            output = {}
-            with open(path, "r",  encoding="utf-8") as file:
-                md = file.read().split ("\n")
-
-            # MD_H1...H6(memoria)
-            h_counter = [-1] * 7 
-
-            # MD_IMG... (memoria)
-            img_counter = -1
-
-            # MD_URL --- (memoria)
-            url_counter = -1
-
-            #MD_QUOTE ... (memoria)
-            quote_counter = -1 
-            quote_counter_bufer = []
-
-            #MD_TEXT 
-            text_counter = -1
-
-            #
-            line_counter = -1
-            bufer_line_counter = 0 
-            
-            # Asignación de variables
-            for line in md:
-                line_counter = line_counter +1
-                line = line.strip ()
-                
-                # MD_HEADERS       
-                if line [0:1] == "#":
-                    # Calcula el primer caracter que no es un "#" en la cadena, consecuentemente arrojando en el "index" su valor (1,6)
-                    match = (re.search(r'[^#]', line))
-                    index = match.start()
-                    h_counter[index] = h_counter[index]+1
-                    output["MD_H"+str(index)+"["+str(h_counter[index])+"]"] = line.replace ("#", "").strip()
-                    # Array con todos los headers en su interior
-                    try: 
-                        output["MD_H"+str(index)].append (line.replace ("#", "").strip())
-                    except:
-                        output["MD_H"+str(index)] = []
-                        output["MD_H"+str(index)].append (line.replace ("#", "").strip())
-                # MD_IMG
-                elif "![" in line and "](" in line and not r"\!" in line:
-                    img_counter = img_counter +1
-                    find = re.findall(r'\(.*?\)', line)
-                    output ["MD_IMG"+"["+str(img_counter)+"]"] = ip+webname + os.sep + os.path.basename(self.attributes["DIR"])  + os.sep +  find [0].replace ("(", "").replace(")","")
-
-                # MD_URL
-                elif "[" in line and  "](" in line and not r"\[" in line:
-                    url_counter = img_counter +1
-                    find = re.findall(r'\(.*?\)', line)
-                    output ["MD_URL"+"["+str(url_counter)+"]"] =  ip+webname + os.sep + os.path.basename(self.attributes["DIR"])  + os.sep +  find [0].replace ("(", "").replace(")","").replace(".md", ".html") # Componenda
-                
-                # MD_QUOTE
-                elif line [0:2] == "> " or line ==">":
-
-                    if (bufer_line_counter+1) == line_counter or bufer_line_counter==0:
-                        quote_counter_bufer.append (line.replace(">", "").strip()) 
-                    else:
-                        # Agregar la línea anterior
-                        quote_counter = quote_counter+1 
-                        output ["MD_QUOTE"+"["+str(quote_counter)+"]"] = quote_counter_bufer
-                        quote_counter_bufer =[] 
-                        
-                        # Agregar la línea actual 
-                        quote_counter_bufer.append (line.replace(">","").strip())
-                    
-                    bufer_line_counter = line_counter
-                # MD_TEXT
-                else:
-                    if line.strip()!="":
-                        text_counter = text_counter +1
-                        output ["MD_TEXT"+"["+str(text_counter)+"]"] = line
-    
-            # MD_QUOTE Agregar última linea del bufer
-            if quote_counter_bufer != []:
-                output ["MD_QUOTE"+"["+str(quote_counter)+"]"] = quote_counter_bufer
-
-            # MARKDOWN TO HTML, etiqueta que contiene todo el documento
-            
-            with open(path, "r",  encoding="utf-8") as file:
-                md = file.read()
-                # TODO: Componenda: sustituir .md por .html para las redirecciones
-                md = md.replace(".md)", ".html)")
-
-            output["MARKDOWN_TO_HTML"] = markdown2.markdown(md, extras=["tables", "fenced-code-blocks"])
-
-            return output   
-
-        """
-        Sustituye las variables de un string (template) por las variables de md_ids
-        """
-
-        def set_format_md (template):
-            output = template
-            md_ids_done=md_ids(path)
-            
-            for label in md_ids_done:
-                if isinstance(md_ids_done[label], str):
-                    output = output.replace("$"+label+"$", markdown2.markdown(md_ids_done[label], extras=["break-on-newline"]).replace("<p>", "").replace ("</p>", "")) 
-
-            # - Los componentes del output que estén dispuestos en un array deben iterarse en etiquetas, p.ej: 
-            # "MD_H1:["titulo 1", "titulo 2"
-            # Si el usuario escribe: <ul> <li> $MD_H1 </li> </ul> el resultado sería:   
-            # <ul> <li> "titulo 1" </li> <li> "titulo 2" </li> </ul> 
-
-            array_labels= re.findall(r'<\w+>\s*\$.*?\$\s*</\w+>',output)
-            for label in array_labels:
-                try:
-                    formatted_label = re.findall( r'<(\w+)>\s*\$(.*?)\$\s*</\1>', label)
-                    bufer =""
-                    for content in md_ids_done[formatted_label[0][1]]:
-                        bufer = bufer + f"<{formatted_label[0][0]}>{content}</{formatted_label[0][0]}>"
-                    output = output.replace(label, markdown2.markdown(bufer, extras=["break-on-newline"]).replace("<p>", "").replace ("</p>", ""))  
-                except:
-                    pass # Las etiquetas que no son especiales de markdown pasarán por aquí
-
-            # VARIABLES GLOBALES
-            output = self.get_format_global (output, path)
-            return output
-
+        with open(path, "r",  encoding="utf-8") as file:
+            md = file.read()
+        
         # Formateo del markdown exportado 
         with open (target_path+os.sep+webname+path[path.find(os.sep):].replace(".md", ".html"), "w", encoding="utf-8") as file:
-            file.write(set_format_md(self.attributes["MD_TEMPLATE"]))
+            formatted_md = self.set_format_md(self.attributes["MD_TEMPLATE"],md)
+            formatted_md  = self.get_format_global (formatted_md , path)
+            file.write(formatted_md)
 
         # Formateo del markdown incrustado en el HTMA 
-        return set_format_md(self.attributes["TEMPLATE"])
+
+        output = self.set_format_md(self.attributes["TEMPLATE"], md)
+        # COMPROBAR TODO: MUY IMPORTANTE, APLICAR LAS VARIABLES GLOBALES TAL COMO ESTABA EN LA FUNCIÓN DE ARRIBA (set_format_md)
+        output = self.get_format_global (output, path)
+        return output
+
+    def get_format_only_md (self, md):
+        formatted_md = self.set_format_md(self.attributes["MD_TEMPLATE"],md)
+        formatted_md  = self.get_format_global (formatted_md , ".")
+        return formatted_md
 
     def get_format_other (self, path):
         output = self.attributes["TEMPLATE"]
@@ -390,7 +425,8 @@ class WBlock ():
             output = output.replace ("$FILE_NAME_FOR_EACH_FILE_IN_DIR$", os.path.basename(path)[:os.path.basename(path).rfind(".")])
             
             # Redirecciones totales
-            output = output.replace ("$TOTAL_REDIRECTIONS$", str(self.attributes["TOTAL_REDIRECTIONS"]))
+            if "TOTAL_REDIRECTIONS" in self.attributes:
+                output = output.replace ("$TOTAL_REDIRECTIONS$", str(self.attributes["TOTAL_REDIRECTIONS"]))
             
             # Enlace para cada archivo.
             if self.attributes["REDIR"] == "MD":
@@ -402,8 +438,6 @@ class WBlock ():
                 output = output.replace ("$LINK_FOR_EACH_FILE_IN_DIR$",ip+webname+path[path.find(os.sep):])
 
             
-
-
         # Hora en la ejecución del script.
         output = output.replace("$DATE_OF_TODAY$", str (datetime.date.today()))
         
@@ -424,7 +458,11 @@ class WBlock ():
             for file in self.list_directory_files(["md", "txt"]): # Por si acaso se quisiera modificar el comportamiento de MD_TEMPLATE para recoger HTML en vez de MD
                 md_file_path = self.attributes["DIR"]+os.sep+file
                 output = output + self.get_format_md (md_file_path)
-        elif self.attributes["REDIR"]=="ALL":
+        elif self.attributes["REDIR"] =="ONLY_MD":
+            self.attributes["DIR"] ="."
+            output = self.get_format_only_md ( fix_markdown_indentation(self.attributes["ONLY_MD"])) # TODO
+            
+        elif self.attributes["REDIR"]=="ALL": 
             pass
         else:
             if "," in self.attributes["REDIR"]:
@@ -447,7 +485,7 @@ class HTMAFile ():
 
     def __init__ (self, htm_path):
         with open(htm_path, "r",  encoding="utf-8") as file:
-            self.htm = file.read().replace("\n","").replace("\t","")
+            self.htm = file.read()#.replace("\n","").replace("\t","")
         self.blocks = self.file_to_blocks()
     
     """
