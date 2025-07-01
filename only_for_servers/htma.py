@@ -9,7 +9,7 @@ In linux-like servers, htma.py must be into the /var/www/ folder, and the target
 """
 
 # HTMA: HTML Template to Markdown Automator
-# v1.4.0
+# v1.4.1
 
 ## LICENSE
 
@@ -396,6 +396,8 @@ class WBlock ():
                 output = []
                 for path in path_date:
                     output.append(path["path"])
+            elif self.attributes["ORDER_BY"]=="SYSTEM_REVERSE":
+                output.reverse()
             elif self.attributes["ORDER_BY"]=="SYSTEM":
                 pass
             else:
