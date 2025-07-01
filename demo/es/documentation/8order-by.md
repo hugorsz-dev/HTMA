@@ -47,3 +47,7 @@ Los archivos se organizarán inversamente en base a la fecha en que fueron cread
 ### `SYSTEM`
 
 Es el comportamiento por defecto, ordena los ficheros de la misma forma en que el sistema operativo los muestra. 
+
+### `SYSTEM_REVERSE`
+
+Los archivos se organizarán en orden inverso al comportamiento por defecto. 
