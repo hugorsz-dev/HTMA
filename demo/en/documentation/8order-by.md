@@ -47,3 +47,7 @@ Files will be reverse-arranged based on the date they were created.
 ### `SYSTEM`
 
 This is the default behaviour, it sorts files in the same way the operating system displays them. 
+
+### `SYSTEM_REVERSE`
+
+Files will be reverse-arranged based on the default behaviour.
