@@ -390,6 +390,8 @@ class WBlock ():
                 output = []
                 for path in path_date:
                     output.append(path["path"])
+            elif self.attributes["ORDER_BY"]=="SYSTEM_REVERSE":
+                output.reverse()
             elif self.attributes["ORDER_BY"]=="SYSTEM":
                 pass
             else:
