@@ -3,7 +3,7 @@ input_path ="demo"
 target_path = "."
 
 # HTMA: HTML Template to Markdown Automator
-# v1.4.0
+# v1.4.1
 
 ## LICENSE
 
